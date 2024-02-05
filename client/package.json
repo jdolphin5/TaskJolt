@@ -2,7 +2,7 @@
   "name": "taskjolt",
   "version": "1.0.0",
   "description": "taskjolt",
-  "main": "./src/app.tsx",
+  "main": "./src/index.tsx",
   "scripts": {
     "build": "webpack --mode production",
     "start": "webpack-dev-server --mode development --open",
