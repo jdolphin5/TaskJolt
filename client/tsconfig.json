@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "target": "es6",
+        "lib": ["es2015", "es2017", "dom"],
+        "removeComments": true,
+        "module": "esnext",
+        "jsx": "react",
+        "allowJs": true,
+        "strict": true,
+        "esModuleInterop": true,
+        "sourceMap": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "baseUrl": "./",
+        "moduleResolution": "node"
+    }
+}

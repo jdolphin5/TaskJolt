@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "outDir": "dist", // dir for transpiled JS
+        "rootDir": "src", // dir containing the TypeScript files
+        "esModuleInterop": true,
+        "strict": true
+    },
+    "include": [
+        "src/**/*.ts" // ts files in the 'src' directory and its subdirectories
+    ]
+}
