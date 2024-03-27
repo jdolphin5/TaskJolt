@@ -10,6 +10,7 @@ const MainContainer: React.FC = () => {
         display: "grid",
         gridTemplateColumns: "200px 1fr",
         gap: "0px",
+        height: "100vh",
       }}
     >
       <div style={{ width: "200px", backgroundColor: "#e0e0e0" }}>
