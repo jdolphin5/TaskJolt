@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const Navigation: React.FC = () => {
   const [showHideMainMenu, setShowHideMainMenu] = useState(false);
@@ -55,8 +56,12 @@ const Navigation: React.FC = () => {
               listStyleType: "none",
             }}
           >
-            <li style={{ padding: "7px 0px 0px 0px" }}>Menu Item 1</li>
-            <li style={{ padding: "7px 0px 0px 0px" }}>Menu Item 2</li>
+            <li style={{ padding: "7px 0px 0px 0px" }}>
+              <Link to={"/"}>Home</Link>
+            </li>
+            <li style={{ padding: "7px 0px 0px 0px" }}>
+              <Link to={"/Tasks"}>Tasks</Link>
+            </li>
             <li style={{ padding: "7px 0px 0px 0px" }}>Menu Item 3</li>
             <li style={{ padding: "7px 0px 0px 0px" }}>Menu Item 4</li>
             <li style={{ padding: "7px 0px 0px 0px" }}>Menu Item 5</li>
