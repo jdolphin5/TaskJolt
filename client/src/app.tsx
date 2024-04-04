@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import MainContainer from "./MainContainer";
+import MainContainer from "./components/MainContainer";
 
 const App: React.FC = () => {
   return (
