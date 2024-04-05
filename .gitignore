@@ -4,3 +4,4 @@ client/dist
 docs/
 server/node_modules
 server/package-lock.json
+server/dist
