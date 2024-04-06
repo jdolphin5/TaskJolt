@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model notes {
+  id      Int    @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.SmallInt
+  task_id Int    @db.SmallInt
+  message String @db.Text
+  task    task   @relation(fields: [task_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "notes_task_id")
+
+  @@index([task_id], map: "task_id_idx")
+}
+
+model project {
+  id   Int    @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.SmallInt
+  name String @db.Text
+  task task[]
+}
+
+model tags {
+  id        Int         @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.SmallInt
+  name      String      @db.Text
+  task_tags task_tags[] @ignore
+}
+
+model task {
+  id              Int          @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.SmallInt
+  name            String       @db.Text
+  priority        String       @db.Text
+  start_date_time DateTime     @db.DateTime(0)
+  due_date_time   DateTime     @db.DateTime(0)
+  recurring       Int          @db.SmallInt
+  project_id      Int          @db.SmallInt
+  notes           notes[]
+  project         project      @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "task_project_id")
+  task_tags       task_tags[]  @ignore
+  task_users      task_users[] @ignore
+
+  @@index([project_id], map: "task_project_id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model task_tags {
+  task_id Int  @db.SmallInt
+  tag_id  Int  @db.SmallInt
+  tags    tags @relation(fields: [tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "task_tags_tag_id")
+  task    task @relation(fields: [task_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "task_tags_task_id")
+
+  @@index([tag_id], map: "task_tags_tag_id")
+  @@index([task_id], map: "task_tags_task_id")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model task_users {
+  task_id Int   @db.SmallInt
+  user_id Int   @db.SmallInt
+  task    task  @relation(fields: [task_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "task_users_task_id")
+  users   users @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "task_users_user_id")
+
+  @@index([task_id], map: "task_id_idx")
+  @@index([user_id], map: "user_id_idx")
+  @@ignore
+}
+
+model users {
+  id                   Int          @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.SmallInt
+  email                String       @db.Text
+  is_google_oauth2     Int          @db.SmallInt
+  password             String       @db.Text
+  last_login_date_time DateTime?    @db.DateTime(0)
+  created_date_time    DateTime     @db.DateTime(0)
+  type                 String       @db.Text
+  task_users           task_users[] @ignore
+}
