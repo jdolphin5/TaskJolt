@@ -17,6 +17,7 @@
     "typescript": "^5.4.3"
   },
   "devDependencies": {
-    "prettier": "3.0.1"
+    "prettier": "3.0.1",
+    "prisma": "^5.12.1"
   }
 }
