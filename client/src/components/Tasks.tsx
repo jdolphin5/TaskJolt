@@ -2,6 +2,26 @@ import React, { useState, useEffect } from "react";
 import { Table, Button } from "antd";
 import { Link } from "react-router-dom";
 
+const tasksAPIUrl = "http://localhost:3000/api/tasks";
+
+async function fetchData() {
+  try {
+    const response = await fetch(tasksAPIUrl);
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    console.log(data);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+fetchData();
+
 const Tasks: React.FC = () => {
   const columns = [
     {

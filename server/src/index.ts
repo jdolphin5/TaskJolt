@@ -1,29 +1,51 @@
 const path = require("path"); // Add the 'path' module
 const express = require("express");
 const app = express();
+const cors = require("cors");
 
 const mysql = require("mysql");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const { PrismaClient } = require("@prisma/client");
-
+const { PrismaClient, Prisma } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-async function main() {
-  const allUsers = await prisma.users.findMany();
-  console.log(allUsers);
-}
+app.use(cors());
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e: any) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
+/*
+async function main() {
+  const taskArray = await prisma.task.findMany({
+    include: {
+      notes: {},
+    },
   });
+
+  console.log(taskArray[0].notes[0]);
+}
+*/
+
+app.get("/api/tasks", async (req: any, res: any) => {
+  try {
+    async function main() {
+      const data = await prisma.task.findMany();
+      res.json(data);
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 // Serve static files from the 'dist' folder
 const distPath = path.resolve(__dirname, "../client/dist");
