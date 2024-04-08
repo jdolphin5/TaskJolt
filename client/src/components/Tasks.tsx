@@ -2,27 +2,25 @@ import React, { useState, useEffect } from "react";
 import { Table, Button } from "antd";
 import { Link } from "react-router-dom";
 
-const tasksAPIUrl = "http://localhost:3000/api/tasks";
-
-async function fetchData() {
-  try {
-    const response = await fetch(tasksAPIUrl);
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    console.log(data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
+interface TasksProps {
+  tasksLoaded: boolean;
+  setTasksLoaded: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-fetchData();
+const Tasks: React.FC<TasksProps> = ({ tasksLoaded, setTasksLoaded }) => {
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setTasksLoaded(true);
+      } catch (error) {
+        console.error("Error loading tasks:", error);
+      }
+    };
 
-const Tasks: React.FC = () => {
+    loadTasks();
+  }, []);
+
   const columns = [
     {
       title: "Project Name",
