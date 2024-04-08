@@ -3,23 +3,106 @@ import { Table, Button } from "antd";
 import { Link } from "react-router-dom";
 
 interface TasksProps {
+  tasksPageLoaded: boolean;
+  setTasksPageLoaded: React.Dispatch<React.SetStateAction<boolean>>;
+  projectsLoaded: boolean;
+  setProjectsLoaded: React.Dispatch<React.SetStateAction<boolean>>;
   tasksLoaded: boolean;
   setTasksLoaded: React.Dispatch<React.SetStateAction<boolean>>;
+  projectIds: number[] | null;
+  setProjectIds: React.Dispatch<React.SetStateAction<number[] | null>>;
+  taskData: any;
+  setTaskData: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const Tasks: React.FC<TasksProps> = ({ tasksLoaded, setTasksLoaded }) => {
+type Task = {
+  key: number;
+  projectName: string;
+  taskName: string;
+  priority: string;
+  date: string;
+  time: string;
+  recurring: string;
+};
+
+const Tasks: React.FC<TasksProps> = ({
+  tasksPageLoaded,
+  setTasksPageLoaded,
+  projectsLoaded,
+  setProjectsLoaded,
+  tasksLoaded,
+  setTasksLoaded,
+  projectIds,
+  setProjectIds,
+  taskData,
+  setTaskData,
+}) => {
+  const [formattedTaskData, setFormattedTaskData] = useState<Task[] | null>([
+    {
+      key: 3,
+      projectName: "Project 1",
+      taskName: "Task 3",
+      priority: "Low",
+      date: "1/3/12",
+      time: "09:00",
+      recurring: "no",
+    },
+  ]);
+
   useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setTasksPageLoaded(true);
+      } catch (error) {
+        console.error("Error loading projects: ", error);
+      }
+    };
+
     const loadTasks = async () => {
       try {
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        setTasksLoaded(true);
       } catch (error) {
         console.error("Error loading tasks:", error);
       }
     };
 
+    console.log("initialating useEffect to load projects and tasks");
+
+    loadProjects();
     loadTasks();
   }, []);
+
+  useEffect(() => {
+    const formatTaskData = (taskData: any) => {
+      try {
+        let newTaskData = [];
+        if (taskData !== null && taskData !== undefined) {
+          for (let i = 0; i < taskData.length; i++) {
+            const singleTask: Task = {
+              key: taskData[i].id,
+              projectName: taskData[i].id,
+              taskName: taskData[i].name,
+              priority: taskData[i].priority,
+              date: taskData[i].start_date_time,
+              time: " - ",
+              recurring: taskData[i].recurring,
+            };
+            newTaskData.push(singleTask);
+          }
+          setFormattedTaskData(newTaskData);
+        } else {
+          console.log(
+            "taskData null or undefined when calling formatTaskData()"
+          );
+        }
+      } catch (error) {
+        console.error("Error loading tasks:", error);
+      }
+    };
+
+    formatTaskData(taskData);
+  }, [tasksLoaded]);
 
   const columns = [
     {
@@ -58,6 +141,7 @@ const Tasks: React.FC<TasksProps> = ({ tasksLoaded, setTasksLoaded }) => {
     },
   ];
 
+  /*
   const taskData = [
     {
       key: "1",
@@ -87,6 +171,11 @@ const Tasks: React.FC<TasksProps> = ({ tasksLoaded, setTasksLoaded }) => {
       recurring: "no",
     },
   ];
+  */
+  const dataSource = formattedTaskData?.map((task, index) => ({
+    ...task,
+    key: index.toString(),
+  }));
 
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
@@ -94,7 +183,7 @@ const Tasks: React.FC<TasksProps> = ({ tasksLoaded, setTasksLoaded }) => {
         Task List
       </h1>
       <div style={{ margin: "0px 0px 10px 0px" }}>
-        <Table dataSource={taskData} columns={columns} />
+        <Table dataSource={dataSource} columns={columns} />
         <Button>Add task</Button>
         <p>To edit a task, simply click on the task name.</p>
       </div>

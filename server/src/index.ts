@@ -24,10 +24,43 @@ async function main() {
 }
 */
 
+app.get("/api/projects", async (req: any, res: any) => {
+  try {
+    async function main() {
+      const data = await prisma.project.findMany();
+      res.json(data);
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.get("/api/tasks", async (req: any, res: any) => {
   try {
     async function main() {
-      const data = await prisma.task.findMany();
+      const { projectIds } = req.query;
+
+      const projectIdArray = projectIds.split(",").map(Number);
+
+      const data = await prisma.task.findMany({
+        where: {
+          project_id: {
+            in: projectIdArray,
+          },
+        },
+      });
       res.json(data);
     }
 
