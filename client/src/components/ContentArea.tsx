@@ -16,11 +16,17 @@ async function fetchProjectData() {
   }
 }
 
-async function fetchTaskData(projectIds: number[] | null) {
+async function fetchTaskData(projectData: any) {
   try {
-    if (Array.isArray(projectIds)) {
+    const formattedProjectIds = projectData.map((project: { id: number }) => [
+      project.id,
+    ]);
+
+    if (Array.isArray(formattedProjectIds)) {
       const response = await axios.get(
-        `http://localhost:3000/api/tasks?projectIds=${projectIds.join(",")}`
+        `http://localhost:3000/api/tasks?projectIds=${formattedProjectIds.join(
+          ","
+        )}`
       );
 
       console.log(response);
@@ -40,7 +46,7 @@ const ContentArea: React.FC = () => {
   const [tasksPageLoaded, setTasksPageLoaded] = useState(false);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
   const [tasksLoaded, setTasksLoaded] = useState(false);
-  const [projectIds, setProjectIds] = useState<number[] | null>(null);
+  const [projectData, setProjectData] = useState<any | null>(null);
   const [taskData, setTaskData] = useState<any>(null);
 
   useEffect(() => {
@@ -48,16 +54,20 @@ const ContentArea: React.FC = () => {
       fetchProjectData()
         .then((projectData) => {
           console.log("success");
+          /*
           const formattedProjectIds = projectData.map(
             (project: { id: number }) => project.id
           );
-          setProjectIds(formattedProjectIds);
+          setProjectData(formattedProjectIds);
+
+          */
 
           //do not include projectID === 2
-          const filteredProjectIds = formattedProjectIds?.filter(
-            (id: number) => id !== 2
+          const filteredProjectIds = projectData?.filter(
+            (project: { id: number }) => project.id !== 2
           );
-          setProjectIds(filteredProjectIds);
+
+          setProjectData(filteredProjectIds);
           setProjectsLoaded(true);
         })
         .catch((error) => {
@@ -68,7 +78,7 @@ const ContentArea: React.FC = () => {
 
   useEffect(() => {
     if (projectsLoaded) {
-      fetchTaskData(projectIds).then((tasksLoadedData) => {
+      fetchTaskData(projectData).then((tasksLoadedData) => {
         console.log("success tasks loaded");
         const formattedTaskData = tasksLoadedData;
         setTaskData(formattedTaskData);
@@ -90,8 +100,8 @@ const ContentArea: React.FC = () => {
             setProjectsLoaded={setProjectsLoaded}
             tasksLoaded={tasksLoaded}
             setTasksLoaded={setTasksLoaded}
-            projectIds={projectIds}
-            setProjectIds={setProjectIds}
+            projectData={projectData}
+            setProjectData={setProjectData}
             taskData={taskData}
             setTaskData={setTaskData}
           />

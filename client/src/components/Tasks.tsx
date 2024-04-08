@@ -9,15 +9,15 @@ interface TasksProps {
   setProjectsLoaded: React.Dispatch<React.SetStateAction<boolean>>;
   tasksLoaded: boolean;
   setTasksLoaded: React.Dispatch<React.SetStateAction<boolean>>;
-  projectIds: number[] | null;
-  setProjectIds: React.Dispatch<React.SetStateAction<number[] | null>>;
+  projectData: any;
+  setProjectData: React.Dispatch<React.SetStateAction<any>>;
   taskData: any;
   setTaskData: React.Dispatch<React.SetStateAction<any>>;
 }
 
 type Task = {
   key: number;
-  projectName: string;
+  projectName: string | undefined;
   taskName: string;
   priority: string;
   date: string;
@@ -32,8 +32,8 @@ const Tasks: React.FC<TasksProps> = ({
   setProjectsLoaded,
   tasksLoaded,
   setTasksLoaded,
-  projectIds,
-  setProjectIds,
+  projectData,
+  setProjectData,
   taskData,
   setTaskData,
 }) => {
@@ -77,6 +77,14 @@ const Tasks: React.FC<TasksProps> = ({
     const formatTaskData = (taskData: any) => {
       try {
         let newTaskData = [];
+        let projectIdToNameMap = new Map<number, string>();
+
+        if (projectData !== null && projectData !== undefined) {
+          for (let i = 0; i < projectData.length; i++) {
+            projectIdToNameMap.set(projectData[i].id, projectData[i].name);
+          }
+        }
+
         if (taskData !== null && taskData !== undefined) {
           for (let i = 0; i < taskData.length; i++) {
             const singleTaskDueDate: Date = new Date(
@@ -100,11 +108,11 @@ const Tasks: React.FC<TasksProps> = ({
             const dueMeridiem =
               singleTaskDueDate.getHours() >= 12 ? "PM" : "AM";
             const dueFormattedTime = `${dueHour}:${dueMinute} ${dueMeridiem}`;
-            const isRecurring = taskData[i] === 0 ? "no" : "yes";
+            const isRecurring = taskData[i].recurring === 0 ? "no" : "yes";
 
             const singleTask: Task = {
               key: taskData[i].id,
-              projectName: taskData[i].id,
+              projectName: projectIdToNameMap.get(taskData[i].project_id),
               taskName: taskData[i].name,
               priority: taskData[i].priority,
               date: formattedDueDate,
@@ -206,7 +214,11 @@ const Tasks: React.FC<TasksProps> = ({
         Task List
       </h1>
       <div style={{ margin: "0px 0px 10px 0px" }}>
-        <Table dataSource={dataSource} columns={columns} />
+        <Table
+          dataSource={dataSource}
+          columns={columns}
+          pagination={{ pageSize: 15 }}
+        />
         <Button>Add task</Button>
         <p>To edit a task, simply click on the task name.</p>
       </div>

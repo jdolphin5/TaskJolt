@@ -60,6 +60,14 @@ app.get("/api/tasks", async (req: any, res: any) => {
             in: projectIdArray,
           },
         },
+        include: {
+          project: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
       });
       res.json(data);
     }
