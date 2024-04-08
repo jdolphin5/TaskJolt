@@ -79,14 +79,37 @@ const Tasks: React.FC<TasksProps> = ({
         let newTaskData = [];
         if (taskData !== null && taskData !== undefined) {
           for (let i = 0; i < taskData.length; i++) {
+            const singleTaskDueDate: Date = new Date(
+              taskData[i].start_date_time
+            );
+
+            const dueDay = String(singleTaskDueDate.getDate()).padStart(2, "0");
+            const dueMonth = String(singleTaskDueDate.getMonth() + 1).padStart(
+              2,
+              "0"
+            );
+            const dueYear = String(singleTaskDueDate.getFullYear());
+            const formattedDueDate = `${dueDay}/${dueMonth}/${dueYear}`;
+
+            const dueHour = singleTaskDueDate.getHours() % 12 || 12; // Convert to 12-hour format
+            const dueMinute = String(singleTaskDueDate.getMinutes()).padStart(
+              2,
+              "0"
+            );
+
+            const dueMeridiem =
+              singleTaskDueDate.getHours() >= 12 ? "PM" : "AM";
+            const dueFormattedTime = `${dueHour}:${dueMinute} ${dueMeridiem}`;
+            const isRecurring = taskData[i] === 0 ? "no" : "yes";
+
             const singleTask: Task = {
               key: taskData[i].id,
               projectName: taskData[i].id,
               taskName: taskData[i].name,
               priority: taskData[i].priority,
-              date: taskData[i].start_date_time,
-              time: " - ",
-              recurring: taskData[i].recurring,
+              date: formattedDueDate,
+              time: dueFormattedTime,
+              recurring: isRecurring,
             };
             newTaskData.push(singleTask);
           }
