@@ -3,20 +3,15 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import Tasks from "./Tasks";
 import EditTask from "./EditTask";
+import axios from "axios";
 
 const tasksAPIUrl = "http://localhost:3000/api/tasks";
 
 async function fetchData() {
   try {
-    const response = await fetch(tasksAPIUrl);
+    const response = await axios.get(tasksAPIUrl);
 
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    console.log(data);
+    console.log(response);
   } catch (error) {
     console.error("Error fetching data:", error);
   }
