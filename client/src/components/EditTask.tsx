@@ -41,6 +41,10 @@ const EditTask: React.FC<TasksProps> = ({
         <AddProjectModal
           showHideAddProjectModal={showHideAddProjectModal}
           setShowHideAddProjectModal={setShowHideAddProjectModal}
+          projectsLoaded={projectsLoaded}
+          setProjectsLoaded={setProjectsLoaded}
+          projectData={projectData}
+          setProjectData={setProjectData}
         />
       )}
       <h1 style={{ margin: "0px 0px 10px 0px", textAlign: "center" }}>
