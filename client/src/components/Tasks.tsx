@@ -197,7 +197,9 @@ const Tasks: React.FC<TasksProps> = ({
           columns={columns}
           pagination={{ pageSize: 15 }}
         />
-        <Button>Add task</Button>
+        <Link to="../AddTask/0">
+          <Button>Add task</Button>
+        </Link>
         <p>
           To view a task's notes, or to edit a task, simply click on the task
           name.

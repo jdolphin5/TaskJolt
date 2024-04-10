@@ -3,6 +3,7 @@ import { Form, Select, Input, DatePicker, Radio, Button } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import AddProjectModal from "./AddProjectModal";
 import { TasksProps } from "./Types";
+import { useNavigate } from "react-router-dom";
 
 //('Task 1', 'High', '2024-04-06 09:00:00', '2024-04-07 17:00:00', 0, 1),
 const AddTask: React.FC<TasksProps> = ({
@@ -17,6 +18,12 @@ const AddTask: React.FC<TasksProps> = ({
   taskData,
   setTaskData,
 }) => {
+  const history = useNavigate();
+
+  const handleBackButtonClick = () => {
+    history(-1);
+  };
+
   const [showHideAddProjectModal, setShowHideAddProjectModal] = useState(false);
 
   const handleAddProjectModal = () => {
@@ -99,7 +106,9 @@ const AddTask: React.FC<TasksProps> = ({
       </Form>
 
       <Button.Group style={{ padding: "10px 0px 0px 0px" }}>
-        <Button type="primary">&lt; Go back</Button>
+        <Button type="link" onClick={handleBackButtonClick}>
+          &lt; Go back
+        </Button>
       </Button.Group>
     </div>
   );
