@@ -1,29 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button } from "antd";
 import { Link } from "react-router-dom";
-
-interface TasksProps {
-  tasksPageLoaded: boolean;
-  setTasksPageLoaded: React.Dispatch<React.SetStateAction<boolean>>;
-  projectsLoaded: boolean;
-  setProjectsLoaded: React.Dispatch<React.SetStateAction<boolean>>;
-  tasksLoaded: boolean;
-  setTasksLoaded: React.Dispatch<React.SetStateAction<boolean>>;
-  projectData: any;
-  setProjectData: React.Dispatch<React.SetStateAction<any>>;
-  taskData: any;
-  setTaskData: React.Dispatch<React.SetStateAction<any>>;
-}
-
-type Task = {
-  key: number;
-  projectName: string | undefined;
-  taskName: string;
-  priority: string;
-  date: string;
-  time: string;
-  recurring: string;
-};
+import { Task, TasksProps } from "./Types";
 
 const Tasks: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -147,7 +125,7 @@ const Tasks: React.FC<TasksProps> = ({
       key: "taskName",
       //the render function receives three arguments from the antd table component
       render: (text: string, data: any, index: number) => (
-        <Link to={`/EditTask/${data.key}`}>{data.taskName}</Link>
+        <Link to={`/AddTask/${data.key}`}>{data.taskName}</Link>
       ),
     },
     {
@@ -220,7 +198,10 @@ const Tasks: React.FC<TasksProps> = ({
           pagination={{ pageSize: 15 }}
         />
         <Button>Add task</Button>
-        <p>To edit a task, simply click on the task name.</p>
+        <p>
+          To view a task's notes, or to edit a task, simply click on the task
+          name.
+        </p>
       </div>
     </div>
   );
