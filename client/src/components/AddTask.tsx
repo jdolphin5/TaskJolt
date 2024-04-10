@@ -2,22 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Form, Select, Input, DatePicker, Radio, Button } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import AddProjectModal from "./AddProjectModal";
-
-interface TasksProps {
-  tasksPageLoaded: boolean;
-  setTasksPageLoaded: React.Dispatch<React.SetStateAction<boolean>>;
-  projectsLoaded: boolean;
-  setProjectsLoaded: React.Dispatch<React.SetStateAction<boolean>>;
-  tasksLoaded: boolean;
-  setTasksLoaded: React.Dispatch<React.SetStateAction<boolean>>;
-  projectData: any;
-  setProjectData: React.Dispatch<React.SetStateAction<any>>;
-  taskData: any;
-  setTaskData: React.Dispatch<React.SetStateAction<any>>;
-}
+import { TasksProps } from "./Types";
 
 //('Task 1', 'High', '2024-04-06 09:00:00', '2024-04-07 17:00:00', 0, 1),
-const EditTask: React.FC<TasksProps> = ({
+const AddTask: React.FC<TasksProps> = ({
   tasksPageLoaded,
   setTasksPageLoaded,
   projectsLoaded,
@@ -48,7 +36,7 @@ const EditTask: React.FC<TasksProps> = ({
         />
       )}
       <h1 style={{ margin: "0px 0px 10px 0px", textAlign: "center" }}>
-        Edit Task
+        Add Task
       </h1>
       <Form
         labelCol={{
@@ -116,4 +104,4 @@ const EditTask: React.FC<TasksProps> = ({
     </div>
   );
 };
-export default EditTask;
+export default AddTask;
