@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Table, Button, Form, Input } from "antd";
+import axios from "axios";
 
 interface AddProjectProps {
   showHideAddProjectModal: boolean;
@@ -76,6 +77,29 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
     key: index.toString(),
   }));
 
+  const [formData, setFormData] = useState<{ name?: string }>({});
+
+  const handleInputChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      console.log(formData);
+      // Make API call using axios
+      const response = await axios.post(
+        "http://localhost:3000/api/addproject/",
+        formData
+      );
+      console.log("API Response:", response.data);
+      // Reset form after successful submission
+      setFormData({});
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
   return (
     <div>
       <Modal
@@ -103,11 +127,20 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
             style={{
               maxWidth: 400,
             }}
+            onFinish={handleSubmit}
           >
-            <Form.Item label="Project Name">
-              <Input />
+            <Form.Item label="Project Name" rules={[{ required: true }]}>
+              <Input
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+              />
             </Form.Item>
-            <Button>Add</Button>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Add
+              </Button>
+            </Form.Item>
           </Form>
         </div>
       </Modal>

@@ -121,6 +121,14 @@ app.get("/api/notes/:id", async (req: any, res: any) => {
   }
 });
 
+app.post("/api/addproject", (req: any, res: any) => {
+  const formData = req.body;
+
+  console.log("Received form data:", formData);
+
+  res.status(200).json({ message: "Form data received successfully!" });
+});
+
 // Serve static files from the 'dist' folder
 const distPath = path.resolve(__dirname, "../client/dist");
 app.use(express.static(distPath));
