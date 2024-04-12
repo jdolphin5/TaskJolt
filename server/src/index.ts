@@ -12,17 +12,7 @@ const prisma = new PrismaClient();
 
 app.use(cors());
 
-/*
-async function main() {
-  const taskArray = await prisma.task.findMany({
-    include: {
-      notes: {},
-    },
-  });
-
-  console.log(taskArray[0].notes[0]);
-}
-*/
+app.use(express.json());
 
 app.get("/api/projects", async (req: any, res: any) => {
   try {
@@ -121,12 +111,38 @@ app.get("/api/notes/:id", async (req: any, res: any) => {
   }
 });
 
-app.post("/api/addproject", (req: any, res: any) => {
+app.post("/api/addproject", async (req: any, res: any) => {
   const formData = req.body;
 
   console.log("Received form data:", formData);
 
-  res.status(200).json({ message: "Form data received successfully!" });
+  if (formData === undefined) {
+    console.log("received req.body is undefined");
+  }
+
+  try {
+    async function main() {
+      const newProject = await prisma.project.create({
+        data: {
+          name: formData.name,
+        },
+      });
+      console.log("New project created:", newProject);
+      res.status(200).json({ message: "Form data received successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error creating project:", error);
+  }
 });
 
 // Serve static files from the 'dist' folder
