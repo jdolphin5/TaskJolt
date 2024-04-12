@@ -34,12 +34,18 @@ const AddTask: React.FC<TasksProps> = ({
     <div style={{ padding: "0px 15px 0px 15px" }}>
       {showHideAddProjectModal && (
         <AddProjectModal
-          showHideAddProjectModal={showHideAddProjectModal}
-          setShowHideAddProjectModal={setShowHideAddProjectModal}
+          tasksPageLoaded={tasksPageLoaded}
+          setTasksPageLoaded={setTasksPageLoaded}
           projectsLoaded={projectsLoaded}
           setProjectsLoaded={setProjectsLoaded}
+          tasksLoaded={tasksLoaded}
+          setTasksLoaded={setTasksLoaded}
           projectData={projectData}
           setProjectData={setProjectData}
+          taskData={taskData}
+          setTaskData={setTaskData}
+          showHideAddProjectModal={showHideAddProjectModal}
+          setShowHideAddProjectModal={setShowHideAddProjectModal}
         />
       )}
       <h1 style={{ margin: "0px 0px 10px 0px", textAlign: "center" }}>
