@@ -45,7 +45,7 @@ const Tasks: React.FC<TasksProps> = ({
       }
     };
 
-    console.log("initialating useEffect to load projects and tasks");
+    console.log("initialising useEffect to load projects and tasks");
 
     loadProjects();
     loadTasks();
@@ -150,37 +150,6 @@ const Tasks: React.FC<TasksProps> = ({
     },
   ];
 
-  /*
-  const taskData = [
-    {
-      key: "1",
-      projectName: "Project 1",
-      taskName: "Task 1",
-      priority: "High",
-      date: "12/12/12",
-      time: "09:00",
-      recurring: "yes",
-    },
-    {
-      key: "2",
-      projectName: "Project 1",
-      taskName: "Task 2",
-      priority: "Medium",
-      date: "1/6/12",
-      time: "09:00",
-      recurring: "yes",
-    },
-    {
-      key: "3",
-      projectName: "Project 1",
-      taskName: "Task 3",
-      priority: "Low",
-      date: "1/3/12",
-      time: "09:00",
-      recurring: "no",
-    },
-  ];
-  */
   const dataSource = formattedTaskData?.map((task, index) => ({
     ...task,
     key: index.toString(),
