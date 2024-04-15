@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Form, Select, Input, DatePicker, Radio, Button } from "antd";
+import {
+  Form,
+  Select,
+  Input,
+  DatePicker,
+  TimePicker,
+  Radio,
+  Button,
+} from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import AddProjectModal from "./AddProjectModal";
 import { TasksProps } from "./Types";
@@ -97,12 +105,18 @@ const AddTask: React.FC<TasksProps> = ({
           </Select>
         </Form.Item>
         <Form.Item label="Start Date">
-          <DatePicker />
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <DatePicker />
+            <TimePicker use12Hours format="h:mm a" />
+          </div>
         </Form.Item>
         <Form.Item label="Due Date">
-          <DatePicker />
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <DatePicker />
+            <TimePicker use12Hours format="h:mm a" />
+          </div>
         </Form.Item>
-        <Form.Item label="Is Recurring">
+        <Form.Item label="Recurring">
           <Radio.Group>
             <Radio value="yes">Yes</Radio>
             <Radio value="no">No</Radio>
