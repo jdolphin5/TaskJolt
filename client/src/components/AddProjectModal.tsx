@@ -136,7 +136,7 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
     <div>
       <Modal
         title="Add Project"
-        visible={showHideAddProjectModal}
+        open={showHideAddProjectModal}
         onOk={handleOk}
         onCancel={handleCancel}
       >
@@ -170,7 +170,7 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">
-                Add
+                Add Project
               </Button>
             </Form.Item>
           </Form>
