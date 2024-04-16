@@ -12,6 +12,8 @@ import { PlusCircleOutlined } from "@ant-design/icons";
 import AddProjectModal from "./AddProjectModal";
 import { TasksProps } from "./Types";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { RadioChangeEvent } from "antd/lib/radio";
 
 //('Task 1', 'High', '2024-04-06 09:00:00', '2024-04-07 17:00:00', 0, 1),
 const AddTask: React.FC<TasksProps> = ({
@@ -37,6 +39,78 @@ const AddTask: React.FC<TasksProps> = ({
   const handleAddProjectModal = () => {
     setShowHideAddProjectModal(true);
   };
+
+  const [formData, setFormData] = useState<{
+    name?: string;
+    project?: string;
+    priority?: string;
+    startdate?: string;
+    starttime?: string;
+    duedate?: string;
+    duetime?: string;
+    recurring?: string;
+  }>({});
+
+  const handleSelectChange = (value: any, field: string) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleDateTimeChange = (value: any, field: string) => {
+    if (field === "startdate") {
+      setFormData({ ...formData, [field]: value });
+    } else if (field === "starttime") {
+      setFormData({ ...formData, [field]: value });
+    }
+    if (field === "duedate") {
+      setFormData({ ...formData, [field]: value });
+    } else if (field === "duetime") {
+      setFormData({ ...formData, [field]: value });
+    }
+  };
+
+  const handleRadioChange = (e: RadioChangeEvent) => {
+    setFormData({ ...formData, recurring: e.target.value });
+  };
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
+
+  /*const handleSubmit = async () => {
+    try {
+      console.log(formData);
+
+      const response = await axios.post(
+        "http://localhost:3000/api/addproject",
+        formData
+      );
+      console.log("API Response:", response.data);
+
+      setFormData({ name: "" });
+
+      fetchProjectData()
+        .then((projectData) => {
+          console.log("success");
+
+          const filteredProjectIds = projectData?.filter(
+            (project: { id: number }) => project.id !== 2
+          );
+
+          setProjectData(filteredProjectIds);
+        })
+        .catch((error) => {
+          console.error("Error fetching project data:", error);
+        });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+  */
 
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
@@ -73,7 +147,10 @@ const AddTask: React.FC<TasksProps> = ({
       >
         <Form.Item label="Project Name">
           <div style={{ display: "flex", alignItems: "center" }}>
-            <Select style={{ marginRight: "5px" }}>
+            <Select
+              onChange={(evt) => handleSelectChange(evt, "project")}
+              style={{ marginRight: "5px" }}
+            >
               {projectsLoaded ? (
                 projectData.map(
                   ({ id, name }: { id: number; name: string }) => (
@@ -95,10 +172,14 @@ const AddTask: React.FC<TasksProps> = ({
           </div>
         </Form.Item>
         <Form.Item label="Task Name">
-          <Input />
+          <Input
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+          />
         </Form.Item>
         <Form.Item label="Priority">
-          <Select>
+          <Select onChange={(evt) => handleSelectChange(evt, "priority")}>
             <Select.Option value="Low">Low</Select.Option>
             <Select.Option value="Medium">Medium</Select.Option>
             <Select.Option value="High">High</Select.Option>
@@ -106,18 +187,30 @@ const AddTask: React.FC<TasksProps> = ({
         </Form.Item>
         <Form.Item label="Start Date">
           <div style={{ display: "flex", alignItems: "center" }}>
-            <DatePicker />
-            <TimePicker use12Hours format="h:mm a" />
+            <DatePicker
+              onChange={(evt) => handleDateTimeChange(evt, "startdate")}
+            />
+            <TimePicker
+              onChange={(evt) => handleDateTimeChange(evt, "starttime")}
+              use12Hours
+              format="h:mm a"
+            />
           </div>
         </Form.Item>
         <Form.Item label="Due Date">
           <div style={{ display: "flex", alignItems: "center" }}>
-            <DatePicker />
-            <TimePicker use12Hours format="h:mm a" />
+            <DatePicker
+              onChange={(evt) => handleDateTimeChange(evt, "duedate")}
+            />
+            <TimePicker
+              onChange={(evt) => handleDateTimeChange(evt, "duetime")}
+              use12Hours
+              format="h:mm a"
+            />
           </div>
         </Form.Item>
         <Form.Item label="Recurring">
-          <Radio.Group>
+          <Radio.Group onChange={handleRadioChange}>
             <Radio value="yes">Yes</Radio>
             <Radio value="no">No</Radio>
           </Radio.Group>
