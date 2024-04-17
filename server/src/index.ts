@@ -145,6 +145,48 @@ app.post("/api/addproject", async (req: any, res: any) => {
   }
 });
 
+app.post("/api/addtask", async (req: any, res: any) => {
+  const formData = req.body;
+
+  console.log("Received form data:", formData);
+
+  if (formData === undefined) {
+    console.log("received req.body is undefined");
+  }
+  //name, priority, start_date_time, due_date_time, recurring, project_id
+  try {
+    async function main() {
+      const isoStartDate = new Date(formData.start_date_time).toISOString();
+      const isoDueDate = new Date(formData.due_date_time).toISOString();
+
+      const newTask = await prisma.task.create({
+        data: {
+          name: formData.name,
+          priority: formData.priority,
+          start_date_time: isoStartDate,
+          due_date_time: isoDueDate,
+          recurring: formData.recurring,
+          project_id: formData.project,
+        },
+      });
+      console.log("New task created:", newTask);
+      res.status(200).json({ message: "Form data received successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error creating project:", error);
+  }
+});
+
 // Serve static files from the 'dist' folder
 const distPath = path.resolve(__dirname, "../client/dist");
 app.use(express.static(distPath));
