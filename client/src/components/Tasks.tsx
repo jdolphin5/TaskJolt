@@ -28,28 +28,30 @@ const Tasks: React.FC<TasksProps> = ({
   ]);
 
   useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setTasksPageLoaded(true);
-      } catch (error) {
-        console.error("Error loading projects: ", error);
-      }
-    };
+    if (!tasksPageLoaded) {
+      const loadProjects = async () => {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          setTasksPageLoaded(true);
+        } catch (error) {
+          console.error("Error loading projects: ", error);
+        }
+      };
 
-    const loadTasks = async () => {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      } catch (error) {
-        console.error("Error loading tasks:", error);
-      }
-    };
+      const loadTasks = async () => {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        } catch (error) {
+          console.error("Error loading tasks:", error);
+        }
+      };
 
-    console.log("initialising useEffect to load projects and tasks");
+      console.log("initialising useEffect to load projects and tasks");
 
-    loadProjects();
-    loadTasks();
-  }, []);
+      loadProjects();
+      loadTasks();
+    }
+  }, [tasksPageLoaded]);
 
   useEffect(() => {
     const formatTaskData = (taskData: any) => {
