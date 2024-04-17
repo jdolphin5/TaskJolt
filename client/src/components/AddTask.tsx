@@ -35,6 +35,8 @@ const AddTask: React.FC<TasksProps> = ({
   };
 
   const [showHideAddProjectModal, setShowHideAddProjectModal] = useState(false);
+  const [form] = Form.useForm();
+  const [isFormDataFormatted, setIsFormDataFormatted] = useState(false);
 
   const handleAddProjectModal = () => {
     setShowHideAddProjectModal(true);
@@ -42,13 +44,16 @@ const AddTask: React.FC<TasksProps> = ({
 
   const [formData, setFormData] = useState<{
     name?: string;
-    project?: string;
+    project?: number;
     priority?: string;
-    startdate?: string;
-    starttime?: string;
-    duedate?: string;
-    duetime?: string;
-    recurring?: string;
+    startdate?: any;
+    starttime?: any;
+    start_date_time?: string;
+    duedate?: any;
+    duetime?: any;
+    due_date_time?: string;
+    recurring_string?: string;
+    recurring?: number;
   }>({});
 
   const handleSelectChange = (value: any, field: string) => {
@@ -74,43 +79,110 @@ const AddTask: React.FC<TasksProps> = ({
   };
 
   const handleRadioChange = (e: RadioChangeEvent) => {
-    setFormData({ ...formData, recurring: e.target.value });
+    setFormData({ ...formData, recurring_string: e.target.value });
   };
 
   useEffect(() => {
     console.log(formData);
   }, [formData]);
 
-  /*const handleSubmit = async () => {
+  useEffect(() => {
+    if (isFormDataFormatted) {
+      addTaskCallAPI();
+    }
+  }, [isFormDataFormatted]);
+
+  const handleSubmit = async () => {
     try {
-      console.log(formData);
-
-      const response = await axios.post(
-        "http://localhost:3000/api/addproject",
-        formData
-      );
-      console.log("API Response:", response.data);
-
-      setFormData({ name: "" });
-
-      fetchProjectData()
-        .then((projectData) => {
-          console.log("success");
-
-          const filteredProjectIds = projectData?.filter(
-            (project: { id: number }) => project.id !== 2
-          );
-
-          setProjectData(filteredProjectIds);
-        })
-        .catch((error) => {
-          console.error("Error fetching project data:", error);
-        });
+      await formatFormData(); // Wait for formatFormData() to resolve
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
-  */
+
+  const handleReset = () => {
+    console.log("reset");
+    setFormData({});
+    form.resetFields();
+  };
+
+  const addTaskCallAPI = async () => {
+    try {
+      console.log("handleSubmit - ", formData);
+
+      const response = await axios.post(
+        "http://localhost:3000/api/addtask",
+        formData
+      );
+      console.log("API Response:", response.data);
+
+      setFormData({});
+      setIsFormDataFormatted(false);
+      form.resetFields();
+      setTasksPageLoaded(false);
+      setProjectsLoaded(false);
+      setTasksLoaded(false);
+    } catch (error) {
+      console.error("error calling API : ", error);
+    }
+  };
+
+  const formatFormData = async () => {
+    try {
+      const dateTimeStartString: string = await combineDateTime(
+        formData.startdate,
+        formData.starttime
+      );
+      const dateTimeDueString: string = await combineDateTime(
+        formData.duedate,
+        formData.duetime
+      );
+
+      console.log(dateTimeStartString);
+      console.log(dateTimeDueString);
+
+      const recurringBool: number = formData.recurring_string === "yes" ? 1 : 0;
+
+      setFormData({
+        ...formData,
+        start_date_time: dateTimeStartString,
+        due_date_time: dateTimeDueString,
+        recurring: recurringBool,
+      });
+
+      setIsFormDataFormatted(true);
+    } catch (error) {
+      console.error("Error combining start date and time:", error);
+    }
+  };
+
+  const combineDateTime: (date: any, time: any) => Promise<string> = (
+    date,
+    time
+  ) => {
+    return new Promise((resolve, reject) => {
+      // Extract date components
+      const year = date.$y;
+      const month = date.$M + 1; // Months are zero-based, so add 1
+      const day = date.$D;
+
+      // Extract time components
+      const hours = time.$H;
+      const minutes = time.$m;
+      const seconds = time.$s;
+
+      const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day
+        .toString()
+        .padStart(2, "0")}`;
+      const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
+        .toString()
+        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+      const dateTimeString: string = `${formattedDate} ${formattedTime}`;
+
+      resolve(dateTimeString);
+    });
+  };
 
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
@@ -144,8 +216,10 @@ const AddTask: React.FC<TasksProps> = ({
         style={{
           maxWidth: 600,
         }}
+        onFinish={handleSubmit}
+        form={form}
       >
-        <Form.Item label="Project Name">
+        <Form.Item name="projectname" label="Project Name">
           <div style={{ display: "flex", alignItems: "center" }}>
             <Select
               onChange={(evt) => handleSelectChange(evt, "project")}
@@ -178,14 +252,14 @@ const AddTask: React.FC<TasksProps> = ({
             onChange={handleInputChange}
           />
         </Form.Item>
-        <Form.Item label="Priority">
+        <Form.Item name="priority" label="Priority">
           <Select onChange={(evt) => handleSelectChange(evt, "priority")}>
             <Select.Option value="Low">Low</Select.Option>
             <Select.Option value="Medium">Medium</Select.Option>
             <Select.Option value="High">High</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Start Date">
+        <Form.Item name="startdate" label="Start Date">
           <div style={{ display: "flex", alignItems: "center" }}>
             <DatePicker
               onChange={(evt) => handleDateTimeChange(evt, "startdate")}
@@ -197,7 +271,7 @@ const AddTask: React.FC<TasksProps> = ({
             />
           </div>
         </Form.Item>
-        <Form.Item label="Due Date">
+        <Form.Item name="duedate" label="Due Date">
           <div style={{ display: "flex", alignItems: "center" }}>
             <DatePicker
               onChange={(evt) => handleDateTimeChange(evt, "duedate")}
@@ -209,13 +283,18 @@ const AddTask: React.FC<TasksProps> = ({
             />
           </div>
         </Form.Item>
-        <Form.Item label="Recurring">
+        <Form.Item name="recurring" label="Recurring">
           <Radio.Group onChange={handleRadioChange}>
             <Radio value="yes">Yes</Radio>
             <Radio value="no">No</Radio>
           </Radio.Group>
         </Form.Item>
-        <Button>Submit</Button>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+        <Button type="primary" onClick={handleReset} style={{ marginLeft: 8 }}>
+          Reset
+        </Button>
       </Form>
 
       <Button.Group style={{ padding: "10px 0px 0px 0px" }}>
