@@ -80,7 +80,7 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
       formatProjectData(projectData);
     }
     console.log("Updated projectData:", projectData);
-  }, [, projectData]);
+  }, [projectData]);
 
   const columns = [
     {
@@ -106,27 +106,29 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
     try {
       console.log(formData);
 
-      const response = await axios.post(
-        "http://localhost:3000/api/addproject",
-        formData
-      );
-      console.log("API Response:", response.data);
+      if (Object.keys(formData).length !== 0) {
+        const response = await axios.post(
+          "http://localhost:3000/api/addproject",
+          formData
+        );
+        console.log("API Response:", response.data);
 
-      setFormData({ name: "" });
+        setFormData({});
 
-      fetchProjectData()
-        .then((projectData) => {
-          console.log("success");
+        fetchProjectData()
+          .then((projectData) => {
+            console.log("success");
 
-          const filteredProjectIds = projectData?.filter(
-            (project: { id: number }) => project.id !== 2
-          );
+            const filteredProjectIds = projectData?.filter(
+              (project: { id: number }) => project.id !== 2
+            );
 
-          setProjectData(filteredProjectIds);
-        })
-        .catch((error) => {
-          console.error("Error fetching project data:", error);
-        });
+            setProjectData(filteredProjectIds);
+          })
+          .catch((error) => {
+            console.error("Error fetching project data:", error);
+          });
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -150,10 +152,10 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
         <div style={{ padding: "10px 0 0px 0" }}>
           <Form
             labelCol={{
-              span: 6,
+              span: 8,
             }}
             wrapperCol={{
-              span: 18,
+              span: 16,
             }}
             layout="horizontal"
             style={{
@@ -161,7 +163,18 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
             }}
             onFinish={handleSubmit}
           >
-            <Form.Item label="Project Name" rules={[{ required: true }]}>
+            <Form.Item
+              name="projectNameFormItem"
+              label="Project Name"
+              rules={[
+                {
+                  required: true,
+                  whitespace: true,
+                  message: "Please input a project name",
+                },
+              ]}
+              validateTrigger="onChange"
+            >
               <Input
                 name="name"
                 value={formData.name}
