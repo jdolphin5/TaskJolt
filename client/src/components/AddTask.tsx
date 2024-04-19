@@ -66,16 +66,23 @@ const AddTask: React.FC<TasksProps> = ({
   };
 
   const handleDateTimeChange = (value: any, field: string) => {
+    if (!value) return;
+
+    const { date, time } = value;
+
+    let updatedFormData = { ...formData };
+
     if (field === "startdate") {
-      setFormData({ ...formData, [field]: value });
+      updatedFormData = { ...updatedFormData, [field]: date };
     } else if (field === "starttime") {
-      setFormData({ ...formData, [field]: value });
-    }
-    if (field === "duedate") {
-      setFormData({ ...formData, [field]: value });
+      updatedFormData = { ...updatedFormData, [field]: time };
+    } else if (field === "duedate") {
+      updatedFormData = { ...updatedFormData, [field]: date };
     } else if (field === "duetime") {
-      setFormData({ ...formData, [field]: value });
+      updatedFormData = { ...updatedFormData, [field]: time };
     }
+
+    setFormData(updatedFormData);
   };
 
   const handleRadioChange = (e: RadioChangeEvent) => {
@@ -88,7 +95,46 @@ const AddTask: React.FC<TasksProps> = ({
 
   useEffect(() => {
     if (isFormDataFormatted) {
-      addTaskCallAPI();
+      var ready: boolean = true;
+
+      if (formData.project === null) {
+        console.log("project not entered");
+        ready = false;
+      }
+      if (formData.name === null) {
+        console.log("task not entered");
+        ready = false;
+      }
+      if (formData.priority === null) {
+        console.log("priority not entered");
+        ready = false;
+      }
+      if (formData.startdate === null) {
+        console.log("start date not entered");
+        ready = false;
+      }
+      if (formData.starttime === null) {
+        console.log("start time not entered");
+        ready = false;
+      }
+      if (formData.duedate === null) {
+        console.log("due date not entered");
+        ready = false;
+      }
+      if (formData.duetime === null) {
+        console.log("due time not entered");
+        ready = false;
+      }
+      if (formData.recurring_string === null) {
+        console.log("recurring not selected");
+        ready = false;
+      }
+
+      if (ready) {
+        addTaskCallAPI();
+      }
+
+      setIsFormDataFormatted(false);
     }
   }, [isFormDataFormatted]);
 
@@ -152,7 +198,7 @@ const AddTask: React.FC<TasksProps> = ({
 
       setIsFormDataFormatted(true);
     } catch (error) {
-      console.error("Error combining start date and time:", error);
+      console.error("Error combining date and time:", error);
     }
   };
 
@@ -182,6 +228,15 @@ const AddTask: React.FC<TasksProps> = ({
 
       resolve(dateTimeString);
     });
+  };
+
+  const config = {
+    rules: [
+      {
+        type: "object" as const,
+        required: true,
+      },
+    ],
   };
 
   return (
@@ -219,13 +274,22 @@ const AddTask: React.FC<TasksProps> = ({
         onFinish={handleSubmit}
         form={form}
       >
-        <Form.Item name="projectname" label="Project Name">
+        <Form.Item
+          name="formItemProjectName"
+          label="Project Name"
+          rules={[
+            ({ getFieldValue }) => ({
+              required: !!getFieldValue("formItemProjectName"),
+              message: "Please select a project name",
+            }),
+          ]}
+        >
           <div style={{ display: "flex", alignItems: "center" }}>
             <Select
               onChange={(evt) => handleSelectChange(evt, "project")}
               style={{ marginRight: "5px" }}
             >
-              {projectsLoaded ? (
+              {projectData ? (
                 projectData.map(
                   ({ id, name }: { id: number; name: string }) => (
                     <Select.Option key={id} value={id}>
@@ -245,45 +309,80 @@ const AddTask: React.FC<TasksProps> = ({
             />
           </div>
         </Form.Item>
-        <Form.Item label="Task Name">
+        <Form.Item
+          name="formItemTaskName"
+          label="Task Name"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: "Please input a task name",
+            },
+          ]}
+          validateTrigger="onChange"
+        >
           <Input
             name="name"
             value={formData.name}
             onChange={handleInputChange}
           />
         </Form.Item>
-        <Form.Item name="priority" label="Priority">
+        <Form.Item
+          name="formItemPriority"
+          label="Priority"
+          rules={[
+            {
+              required: true,
+              message: "Please input a priority level",
+            },
+          ]}
+        >
           <Select onChange={(evt) => handleSelectChange(evt, "priority")}>
             <Select.Option value="Low">Low</Select.Option>
             <Select.Option value="Medium">Medium</Select.Option>
             <Select.Option value="High">High</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item name="startdate" label="Start Date">
+        <Form.Item label="Start Date" name="formItemStartDateTime" {...config}>
           <div style={{ display: "flex", alignItems: "center" }}>
             <DatePicker
-              onChange={(evt) => handleDateTimeChange(evt, "startdate")}
+              style={{ marginRight: "8px" }}
+              onChange={(date) => handleDateTimeChange({ date }, "startdate")}
+              value={formData.startdate}
             />
             <TimePicker
-              onChange={(evt) => handleDateTimeChange(evt, "starttime")}
               use12Hours
               format="h:mm a"
+              onChange={(time) => handleDateTimeChange({ time }, "starttime")}
+              value={formData.starttime}
             />
           </div>
         </Form.Item>
-        <Form.Item name="duedate" label="Due Date">
+        <Form.Item label="Due Date" name="formItemDueDateTime" {...config}>
           <div style={{ display: "flex", alignItems: "center" }}>
             <DatePicker
-              onChange={(evt) => handleDateTimeChange(evt, "duedate")}
+              style={{ marginRight: "8px" }}
+              onChange={(date) => handleDateTimeChange({ date }, "duedate")}
+              value={formData.duedate}
             />
             <TimePicker
-              onChange={(evt) => handleDateTimeChange(evt, "duetime")}
               use12Hours
               format="h:mm a"
+              onChange={(time) => handleDateTimeChange({ time }, "duetime")}
+              value={formData.duetime}
             />
           </div>
         </Form.Item>
-        <Form.Item name="recurring" label="Recurring">
+        <Form.Item
+          name="FormItemRecurring"
+          label="Recurring"
+          rules={[
+            {
+              required: true,
+              message: "Please select if the task is recurring",
+            },
+          ]}
+        >
           <Radio.Group onChange={handleRadioChange}>
             <Radio value="yes">Yes</Radio>
             <Radio value="no">No</Radio>
