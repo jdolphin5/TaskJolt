@@ -76,7 +76,7 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
   ]);
 
   useEffect(() => {
-    if (projectsLoaded) {
+    if (projectData) {
       formatProjectData(projectData);
     }
     console.log("Updated projectData:", projectData);
@@ -164,7 +164,7 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
             onFinish={handleSubmit}
           >
             <Form.Item
-              name="projectNameFormItem"
+              name="formItemProjectName"
               label="Project Name"
               rules={[
                 {
