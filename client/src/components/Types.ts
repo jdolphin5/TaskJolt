@@ -16,7 +16,9 @@ export type Task = {
   projectName: string | undefined;
   taskName: string;
   priority: string;
-  date: string;
-  time: string;
+  startdate: string;
+  starttime: string;
+  duedate: string;
+  duetime: string;
   recurring: string;
 };

@@ -21,8 +21,10 @@ const Tasks: React.FC<TasksProps> = ({
       projectName: "Project 1",
       taskName: "Task 3",
       priority: "Low",
-      date: "1/3/12",
-      time: "09:00",
+      startdate: "1/3/12",
+      starttime: "09:00",
+      duedate: "2/2/22",
+      duetime: "09:00",
       recurring: "no",
     },
   ]);
@@ -67,9 +69,30 @@ const Tasks: React.FC<TasksProps> = ({
 
         if (taskData !== null && taskData !== undefined) {
           for (let i = 0; i < taskData.length; i++) {
-            const singleTaskDueDate: Date = new Date(
+            const singleTaskStartDate: Date = new Date(
               taskData[i].start_date_time
             );
+
+            const startDay = String(singleTaskStartDate.getDate()).padStart(
+              2,
+              "0"
+            );
+            const startMonth = String(
+              singleTaskStartDate.getMonth() + 1
+            ).padStart(2, "0");
+            const startYear = String(singleTaskStartDate.getFullYear());
+            const formattedStartDate = `${startDay}/${startMonth}/${startYear}`;
+
+            const startHour = singleTaskStartDate.getHours() % 12 || 12; // Convert to 12-hour format
+            const startMinute = String(
+              singleTaskStartDate.getMinutes()
+            ).padStart(2, "0");
+
+            const startMeridiem =
+              singleTaskStartDate.getHours() >= 12 ? "PM" : "AM";
+            const startFormattedTime = `${startHour}:${startMinute} ${startMeridiem}`;
+
+            const singleTaskDueDate: Date = new Date(taskData[i].due_date_time);
 
             const dueDay = String(singleTaskDueDate.getDate()).padStart(2, "0");
             const dueMonth = String(singleTaskDueDate.getMonth() + 1).padStart(
@@ -95,8 +118,10 @@ const Tasks: React.FC<TasksProps> = ({
               projectName: projectIdToNameMap.get(taskData[i].project_id),
               taskName: taskData[i].name,
               priority: taskData[i].priority,
-              date: formattedDueDate,
-              time: dueFormattedTime,
+              startdate: formattedStartDate,
+              starttime: startFormattedTime,
+              duedate: formattedDueDate,
+              duetime: dueFormattedTime,
               recurring: isRecurring,
             };
             newTaskData.push(singleTask);
@@ -136,14 +161,24 @@ const Tasks: React.FC<TasksProps> = ({
       key: "priority",
     },
     {
+      title: "Start Date",
+      dataIndex: "startdate",
+      key: "startdate",
+    },
+    {
+      title: "Start Time",
+      dataIndex: "starttime",
+      key: "starttime",
+    },
+    {
       title: "Due Date",
-      dataIndex: "date",
-      key: "date",
+      dataIndex: "duedate",
+      key: "duedate",
     },
     {
       title: "Due Time",
-      dataIndex: "time",
-      key: "time",
+      dataIndex: "duetime",
+      key: "duetime",
     },
     {
       title: "Recurring",
