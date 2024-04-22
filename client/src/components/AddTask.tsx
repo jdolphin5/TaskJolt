@@ -8,7 +8,6 @@ import {
   Radio,
   Button,
 } from "antd";
-import { PlusCircleOutlined } from "@ant-design/icons";
 import AddProjectModal from "./AddProjectModal";
 import { TasksProps } from "./Types";
 import { useNavigate } from "react-router-dom";
@@ -230,15 +229,6 @@ const AddTask: React.FC<TasksProps> = ({
     });
   };
 
-  const config = {
-    rules: [
-      {
-        type: "object" as const,
-        required: true,
-      },
-    ],
-  };
-
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
       {showHideAddProjectModal && (
@@ -276,39 +266,38 @@ const AddTask: React.FC<TasksProps> = ({
       >
         <Form.Item
           name="formItemProjectName"
-          label="Project Name"
+          label="Project"
           rules={[
-            ({ getFieldValue }) => ({
-              required: !!getFieldValue("formItemProjectName"),
-              message: "Please select a project name",
-            }),
+            {
+              required: true,
+              message: "Please select a project",
+            },
           ]}
+          style={{ marginBottom: 0 }} // Adjusted style
         >
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Select
-              onChange={(evt) => handleSelectChange(evt, "project")}
-              style={{ marginRight: "5px" }}
-            >
-              {projectData ? (
-                projectData.map(
-                  ({ id, name }: { id: number; name: string }) => (
-                    <Select.Option key={id} value={id}>
-                      {name}
-                    </Select.Option>
-                  )
-                )
-              ) : (
-                <Select.Option disabled value={null}>
-                  No projects available
+          <Select
+            onChange={(evt) => handleSelectChange(evt, "project")}
+            style={{ width: "100%" }}
+          >
+            {projectData ? (
+              projectData.map(({ id, name }: { id: number; name: string }) => (
+                <Select.Option key={id} value={id}>
+                  {name}
                 </Select.Option>
-              )}
-            </Select>
-            <PlusCircleOutlined
-              style={{ cursor: "pointer" }}
-              onClick={handleAddProjectModal}
-            />
-          </div>
+              ))
+            ) : (
+              <Select.Option disabled value={null}>
+                No projects available
+              </Select.Option>
+            )}
+          </Select>
         </Form.Item>
+        <div>
+          <Button type="link" onClick={handleAddProjectModal}>
+            + Add Project
+          </Button>
+        </div>
+
         <Form.Item
           name="formItemTaskName"
           label="Task Name"
@@ -343,7 +332,7 @@ const AddTask: React.FC<TasksProps> = ({
             <Select.Option value="High">High</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Start Date" name="formItemStartDateTime" {...config}>
+        <Form.Item label="Start Date" name="formItemStartDateTime">
           <div style={{ display: "flex", alignItems: "center" }}>
             <DatePicker
               style={{ marginRight: "8px" }}
@@ -358,7 +347,7 @@ const AddTask: React.FC<TasksProps> = ({
             />
           </div>
         </Form.Item>
-        <Form.Item label="Due Date" name="formItemDueDateTime" {...config}>
+        <Form.Item label="Due Date" name="formItemDueDateTime">
           <div style={{ display: "flex", alignItems: "center" }}>
             <DatePicker
               style={{ marginRight: "8px" }}
