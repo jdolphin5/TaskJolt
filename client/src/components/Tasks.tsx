@@ -189,7 +189,6 @@ const Tasks: React.FC<TasksProps> = ({
 
   const dataSource = formattedTaskData?.map((task, index) => ({
     ...task,
-    key: index.toString(),
   }));
 
   return (
@@ -203,7 +202,7 @@ const Tasks: React.FC<TasksProps> = ({
           columns={columns}
           pagination={{ pageSize: 15 }}
         />
-        <Link to="../AddTask/0">
+        <Link to="../AddTask">
           <Button>Add task</Button>
         </Link>
         <p>
