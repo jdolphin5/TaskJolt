@@ -332,35 +332,51 @@ const AddTask: React.FC<TasksProps> = ({
             <Select.Option value="High">High</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Start Date" name="formItemStartDateTime">
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <DatePicker
-              style={{ marginRight: "8px" }}
-              onChange={(date) => handleDateTimeChange({ date }, "startdate")}
-              value={formData.startdate}
-            />
-            <TimePicker
-              use12Hours
-              format="h:mm a"
-              onChange={(time) => handleDateTimeChange({ time }, "starttime")}
-              value={formData.starttime}
-            />
-          </div>
+        <Form.Item
+          label="Start Date"
+          name="formItemStartDate"
+          rules={[{ required: true, message: "Please enter a start date" }]}
+        >
+          <DatePicker
+            style={{ marginRight: "8px" }}
+            onChange={(date) => handleDateTimeChange({ date }, "startdate")}
+            value={formData.startdate}
+          />
         </Form.Item>
-        <Form.Item label="Due Date" name="formItemDueDateTime">
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <DatePicker
-              style={{ marginRight: "8px" }}
-              onChange={(date) => handleDateTimeChange({ date }, "duedate")}
-              value={formData.duedate}
-            />
-            <TimePicker
-              use12Hours
-              format="h:mm a"
-              onChange={(time) => handleDateTimeChange({ time }, "duetime")}
-              value={formData.duetime}
-            />
-          </div>
+        <Form.Item
+          label="Start Time"
+          name="formItemStartTime"
+          rules={[{ required: true, message: "Please enter a start time" }]}
+        >
+          <TimePicker
+            use12Hours
+            format="h:mm a"
+            onChange={(time) => handleDateTimeChange({ time }, "starttime")}
+            value={formData.starttime}
+          />
+        </Form.Item>
+        <Form.Item
+          label="Due Date"
+          name="formItemDueDate"
+          rules={[{ required: true, message: "Please enter a due date" }]}
+        >
+          <DatePicker
+            style={{ marginRight: "8px" }}
+            onChange={(date) => handleDateTimeChange({ date }, "duedate")}
+            value={formData.duedate}
+          />
+        </Form.Item>
+        <Form.Item
+          label="Due Time"
+          name="formItemDueTime"
+          rules={[{ required: true, message: "Please enter a due time" }]}
+        >
+          <TimePicker
+            use12Hours
+            format="h:mm a"
+            onChange={(time) => handleDateTimeChange({ time }, "duetime")}
+            value={formData.duetime}
+          />
         </Form.Item>
         <Form.Item
           name="FormItemRecurring"
