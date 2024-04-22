@@ -108,7 +108,24 @@ const ContentArea: React.FC = () => {
         }
       />
       <Route
-        path="/addtask/:key"
+        path="/edittask/:key"
+        element={
+          <Tasks
+            tasksPageLoaded={tasksPageLoaded}
+            setTasksPageLoaded={setTasksPageLoaded}
+            projectsLoaded={projectsLoaded}
+            setProjectsLoaded={setProjectsLoaded}
+            tasksLoaded={tasksLoaded}
+            setTasksLoaded={setTasksLoaded}
+            projectData={projectData}
+            setProjectData={setProjectData}
+            taskData={taskData}
+            setTaskData={setTaskData}
+          />
+        }
+      />
+      <Route
+        path="/addtask"
         element={
           <AddTask
             tasksPageLoaded={tasksPageLoaded}
