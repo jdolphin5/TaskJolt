@@ -22,3 +22,14 @@ export type Task = {
   duetime: string;
   recurring: string;
 };
+
+export type FormattedTask = {
+  id: number;
+  name: string;
+  priority: string;
+  project: any;
+  project_id: number;
+  recurring: number;
+  start_date_time: string;
+  due_date_time: string;
+};
