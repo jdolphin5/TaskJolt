@@ -9,12 +9,11 @@ import {
   Button,
 } from "antd";
 import AddProjectModal from "./AddProjectModal";
-import { TasksProps } from "./Types";
-import { useNavigate } from "react-router-dom";
+import { Task, FormattedTask, TasksProps } from "./Types";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { RadioChangeEvent } from "antd/lib/radio";
 
-//('Task 1', 'High', '2024-04-06 09:00:00', '2024-04-07 17:00:00', 0, 1),
 const EditTask: React.FC<TasksProps> = ({
   tasksPageLoaded,
   setTasksPageLoaded,
@@ -28,6 +27,7 @@ const EditTask: React.FC<TasksProps> = ({
   setTaskData,
 }) => {
   const history = useNavigate();
+  const location = useLocation();
 
   const handleBackButtonClick = () => {
     history(-1);
@@ -151,29 +151,6 @@ const EditTask: React.FC<TasksProps> = ({
     form.resetFields();
   };
 
-  const loadTaskCallAPI = async () => {};
-
-  const saveEditTaskCallAPI = async () => {
-    try {
-      console.log("handleSubmit - ", formData);
-
-      const response = await axios.post(
-        "http://localhost:3000/api/addtask",
-        formData
-      );
-      console.log("API Response:", response.data);
-
-      setFormData({});
-      setIsFormDataFormatted(false);
-      form.resetFields();
-      setTasksPageLoaded(false);
-      setProjectsLoaded(false);
-      setTasksLoaded(false);
-    } catch (error) {
-      console.error("error calling API : ", error);
-    }
-  };
-
   const formatFormData = async () => {
     try {
       const dateTimeStartString: string = await combineDateTime(
@@ -229,6 +206,61 @@ const EditTask: React.FC<TasksProps> = ({
 
       resolve(dateTimeString);
     });
+  };
+
+  const loadTask = (taskId: number) => {
+    console.log("taskId:", taskId);
+
+    console.log(taskData);
+
+    const myTask = taskData.filter((task: FormattedTask) => task.id === taskId);
+
+    console.log(myTask);
+  };
+
+  useEffect(() => {
+    if (taskData) {
+      console.log("task data found");
+
+      const currentURL = location.pathname;
+      let matches = currentURL.match(/\d+/g);
+
+      let numArr: number[] = [];
+
+      if (matches) {
+        console.log("number matched");
+        for (let i = 0; i < matches.length; i++) {
+          let cur: string = matches[i];
+          cur = cur.trim();
+          numArr.push(+cur);
+        }
+
+        console.log(numArr);
+
+        loadTask(numArr[0]);
+      }
+    }
+  }, [location, taskData]);
+
+  const saveEditTaskCallAPI = async () => {
+    try {
+      console.log("handleSubmit - ", formData);
+
+      const response = await axios.post(
+        "http://localhost:3000/api/addtask",
+        formData
+      );
+      console.log("API Response:", response.data);
+
+      setFormData({});
+      setIsFormDataFormatted(false);
+      form.resetFields();
+      setTasksPageLoaded(false);
+      setProjectsLoaded(false);
+      setTasksLoaded(false);
+    } catch (error) {
+      console.error("error calling API : ", error);
+    }
   };
 
   return (
