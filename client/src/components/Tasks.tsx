@@ -152,7 +152,7 @@ const Tasks: React.FC<TasksProps> = ({
       key: "taskName",
       //the render function receives three arguments from the antd table component
       render: (text: string, data: any, index: number) => (
-        <Link to={`/AddTask/${data.key}`}>{data.taskName}</Link>
+        <Link to={`/EditTask/${data.key}`}>{data.taskName}</Link>
       ),
     },
     {
