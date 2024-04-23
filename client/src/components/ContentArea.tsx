@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import Tasks from "./Tasks";
 import AddTask from "./AddTask";
+import EditTask from "./EditTask";
 import axios from "axios";
 
 async function fetchProjectData() {
@@ -110,7 +111,7 @@ const ContentArea: React.FC = () => {
       <Route
         path="/edittask/:key"
         element={
-          <Tasks
+          <EditTask
             tasksPageLoaded={tasksPageLoaded}
             setTasksPageLoaded={setTasksPageLoaded}
             projectsLoaded={projectsLoaded}
