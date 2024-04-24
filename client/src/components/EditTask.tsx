@@ -139,7 +139,7 @@ const EditTask: React.FC<TasksProps> = ({
 
   const handleSubmit = async () => {
     try {
-      await formatFormData(); // Wait for formatFormData() to resolve
+      await formatFormData();
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -211,11 +211,25 @@ const EditTask: React.FC<TasksProps> = ({
   const loadTask = (taskId: number) => {
     console.log("taskId:", taskId);
 
-    console.log(taskData);
-
-    const myTask = taskData.filter((task: FormattedTask) => task.id === taskId);
+    const myTask = taskData.filter(
+      (task: FormattedTask) => task.id === taskId
+    )[0];
 
     console.log(myTask);
+
+    setFormData({
+      ...formData,
+      name: myTask.name,
+      project: myTask.project.id,
+      priority: myTask.priority,
+      startdate: myTask.startdate,
+      starttime: myTask.starttime,
+      start_date_time: "",
+      duedate: myTask.duedate,
+      duetime: myTask.duetime,
+      due_date_time: "",
+      recurring: myTask.recurring,
+    });
   };
 
   useEffect(() => {
@@ -284,157 +298,159 @@ const EditTask: React.FC<TasksProps> = ({
       <h1 style={{ margin: "0px 0px 10px 0px", textAlign: "center" }}>
         Edit Task
       </h1>
-      <Form
-        labelCol={{
-          span: 4,
-        }}
-        wrapperCol={{
-          span: 14,
-        }}
-        layout="horizontal"
-        style={{
-          maxWidth: 600,
-        }}
-        onFinish={handleSubmit}
-        form={form}
-      >
-        <Form.Item
-          name="formItemProjectName"
-          label="Project"
-          rules={[
-            {
-              required: true,
-              message: "Please select a project",
-            },
-          ]}
-          style={{ marginBottom: 0 }} // Adjusted style
+      {formData.name ? (
+        <Form
+          labelCol={{
+            span: 4,
+          }}
+          wrapperCol={{
+            span: 14,
+          }}
+          layout="horizontal"
+          style={{
+            maxWidth: 600,
+          }}
+          onFinish={handleSubmit}
+          form={form}
+          initialValues={formData}
         >
-          <Select
-            onChange={(evt) => handleSelectChange(evt, "project")}
-            style={{ width: "100%" }}
+          <Form.Item
+            name="project"
+            label="Project"
+            rules={[
+              {
+                required: true,
+                message: "Please select a project",
+              },
+            ]}
+            style={{ marginBottom: 0 }} // Adjusted style
           >
-            {projectData ? (
-              projectData.map(({ id, name }: { id: number; name: string }) => (
-                <Select.Option key={id} value={id}>
-                  {name}
+            <Select
+              onChange={(evt) => handleSelectChange(evt, "project")}
+              style={{ width: "100%" }}
+            >
+              {projectData ? (
+                projectData.map(
+                  ({ id, name }: { id: number; name: string }) => (
+                    <Select.Option key={id} value={id}>
+                      {name}
+                    </Select.Option>
+                  )
+                )
+              ) : (
+                <Select.Option disabled value={null}>
+                  No projects available
                 </Select.Option>
-              ))
-            ) : (
-              <Select.Option disabled value={null}>
-                No projects available
-              </Select.Option>
-            )}
-          </Select>
-        </Form.Item>
-        <div>
-          <Button type="link" onClick={handleAddProjectModal}>
-            + Add Project
-          </Button>
-        </div>
+              )}
+            </Select>
+          </Form.Item>
+          <div>
+            <Button type="link" onClick={handleAddProjectModal}>
+              + Add Project
+            </Button>
+          </div>
 
-        <Form.Item
-          name="formItemTaskName"
-          label="Task Name"
-          rules={[
-            {
-              required: true,
-              whitespace: true,
-              message: "Please input a task name",
-            },
-          ]}
-          validateTrigger="onChange"
-        >
-          <Input
+          <Form.Item
             name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-          />
-        </Form.Item>
-        <Form.Item
-          name="formItemPriority"
-          label="Priority"
-          rules={[
-            {
-              required: true,
-              message: "Please input a priority level",
-            },
-          ]}
-        >
-          <Select onChange={(evt) => handleSelectChange(evt, "priority")}>
-            <Select.Option value="Low">Low</Select.Option>
-            <Select.Option value="Medium">Medium</Select.Option>
-            <Select.Option value="High">High</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item
-          label="Start Date"
-          name="formItemStartDate"
-          rules={[{ required: true, message: "Please enter a start date" }]}
-        >
-          <DatePicker
-            style={{ marginRight: "8px" }}
-            onChange={(date) => handleDateTimeChange({ date }, "startdate")}
-            value={formData.startdate}
-          />
-        </Form.Item>
-        <Form.Item
-          label="Start Time"
-          name="formItemStartTime"
-          rules={[{ required: true, message: "Please enter a start time" }]}
-        >
-          <TimePicker
-            use12Hours
-            format="h:mm a"
-            onChange={(time) => handleDateTimeChange({ time }, "starttime")}
-            value={formData.starttime}
-          />
-        </Form.Item>
-        <Form.Item
-          label="Due Date"
-          name="formItemDueDate"
-          rules={[{ required: true, message: "Please enter a due date" }]}
-        >
-          <DatePicker
-            style={{ marginRight: "8px" }}
-            onChange={(date) => handleDateTimeChange({ date }, "duedate")}
-            value={formData.duedate}
-          />
-        </Form.Item>
-        <Form.Item
-          label="Due Time"
-          name="formItemDueTime"
-          rules={[{ required: true, message: "Please enter a due time" }]}
-        >
-          <TimePicker
-            use12Hours
-            format="h:mm a"
-            onChange={(time) => handleDateTimeChange({ time }, "duetime")}
-            value={formData.duetime}
-          />
-        </Form.Item>
-        <Form.Item
-          name="FormItemRecurring"
-          label="Recurring"
-          rules={[
-            {
-              required: true,
-              message: "Please select if the task is recurring",
-            },
-          ]}
-        >
-          <Radio.Group onChange={handleRadioChange}>
-            <Radio value="yes">Yes</Radio>
-            <Radio value="no">No</Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Button type="primary" htmlType="submit">
-          Save
-        </Button>
-        <Button type="primary" onClick={handleReset} style={{ marginLeft: 8 }}>
-          Reset
-        </Button>
-      </Form>
-
+            label="Task Name"
+            rules={[
+              {
+                required: true,
+                whitespace: true,
+                message: "Please input a task name",
+              },
+            ]}
+            validateTrigger="onChange"
+          >
+            <Input name="name" onChange={handleInputChange} />
+          </Form.Item>
+          <Form.Item
+            name="priority"
+            label="Priority"
+            rules={[
+              {
+                required: true,
+                message: "Please input a priority level",
+              },
+            ]}
+          >
+            <Select onChange={(evt) => handleSelectChange(evt, "priority")}>
+              <Select.Option value="Low">Low</Select.Option>
+              <Select.Option value="Medium">Medium</Select.Option>
+              <Select.Option value="High">High</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Start Date"
+            name="startdate"
+            rules={[{ required: true, message: "Please enter a start date" }]}
+          >
+            <DatePicker
+              style={{ marginRight: "8px" }}
+              onChange={(date) => handleDateTimeChange({ date }, "startdate")}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Start Time"
+            name="starttime"
+            rules={[{ required: true, message: "Please enter a start time" }]}
+          >
+            <TimePicker
+              use12Hours
+              format="h:mm a"
+              onChange={(time) => handleDateTimeChange({ time }, "starttime")}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Due Date"
+            name="duedate"
+            rules={[{ required: true, message: "Please enter a due date" }]}
+          >
+            <DatePicker
+              style={{ marginRight: "8px" }}
+              onChange={(date) => handleDateTimeChange({ date }, "duedate")}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Due Time"
+            name="duetime"
+            rules={[{ required: true, message: "Please enter a due time" }]}
+          >
+            <TimePicker
+              use12Hours
+              format="h:mm a"
+              onChange={(time) => handleDateTimeChange({ time }, "duetime")}
+            />
+          </Form.Item>
+          <Form.Item
+            name="recurring_string"
+            label="Recurring"
+            rules={[
+              {
+                required: true,
+                message: "Please select if the task is recurring",
+              },
+            ]}
+          >
+            <Radio.Group onChange={handleRadioChange}>
+              <Radio value="yes">Yes</Radio>
+              <Radio value="no">No</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Save
+          </Button>
+          <Button
+            type="primary"
+            onClick={handleReset}
+            style={{ marginLeft: 8 }}
+          >
+            Reset
+          </Button>
+        </Form>
+      ) : (
+        "Form data not loaded"
+      )}
       <Button.Group style={{ padding: "10px 0px 0px 0px" }}>
         <Button type="link" onClick={handleBackButtonClick}>
           &lt; Go back
