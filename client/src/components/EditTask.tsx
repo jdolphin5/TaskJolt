@@ -13,6 +13,9 @@ import { Task, FormattedTask, TasksProps } from "./Types";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { RadioChangeEvent } from "antd/lib/radio";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 const EditTask: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -29,6 +32,9 @@ const EditTask: React.FC<TasksProps> = ({
   const history = useNavigate();
   const location = useLocation();
 
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+
   const handleBackButtonClick = () => {
     history(-1);
   };
@@ -36,6 +42,7 @@ const EditTask: React.FC<TasksProps> = ({
   const [showHideAddProjectModal, setShowHideAddProjectModal] = useState(false);
   const [form] = Form.useForm();
   const [isFormDataFormatted, setIsFormDataFormatted] = useState(false);
+  const [defaultValues, setDefaultValues] = useState<any>(null);
 
   const handleAddProjectModal = () => {
     setShowHideAddProjectModal(true);
@@ -147,7 +154,7 @@ const EditTask: React.FC<TasksProps> = ({
 
   const handleReset = () => {
     console.log("reset");
-    setFormData({});
+    setFormData({ ...defaultValues });
     form.resetFields();
   };
 
@@ -217,18 +224,23 @@ const EditTask: React.FC<TasksProps> = ({
 
     console.log(myTask);
 
-    setFormData({
-      ...formData,
+    const isoStringStartDate: string = myTask.start_date_time;
+    const dateObjectStartDate =
+      dayjs(isoStringStartDate).tz("Australia/Sydney");
+    const isoStringDueDate: string = myTask.due_date_time;
+    const dateObjectDueDate = dayjs(isoStringDueDate).tz("Australia/Sydney");
+
+    setDefaultValues({
       name: myTask.name,
       project: myTask.project.id,
       priority: myTask.priority,
-      startdate: myTask.startdate,
-      starttime: myTask.starttime,
-      start_date_time: "",
-      duedate: myTask.duedate,
-      duetime: myTask.duetime,
-      due_date_time: "",
-      recurring: myTask.recurring,
+      startdate: dateObjectStartDate,
+      starttime: dateObjectStartDate,
+      start_date_time: myTask.start_date_time,
+      duedate: dateObjectDueDate,
+      duetime: dateObjectDueDate,
+      due_date_time: myTask.due_date_time,
+      recurring_string: myTask.recurring == 0 ? "no" : "yes",
     });
   };
 
@@ -255,6 +267,12 @@ const EditTask: React.FC<TasksProps> = ({
       }
     }
   }, [location, taskData]);
+
+  useEffect(() => {
+    setFormData({
+      ...defaultValues,
+    });
+  }, [defaultValues]);
 
   const saveEditTaskCallAPI = async () => {
     try {
@@ -298,7 +316,7 @@ const EditTask: React.FC<TasksProps> = ({
       <h1 style={{ margin: "0px 0px 10px 0px", textAlign: "center" }}>
         Edit Task
       </h1>
-      {formData.name ? (
+      {defaultValues ? (
         <Form
           labelCol={{
             span: 4,
@@ -312,7 +330,7 @@ const EditTask: React.FC<TasksProps> = ({
           }}
           onFinish={handleSubmit}
           form={form}
-          initialValues={formData}
+          initialValues={defaultValues}
         >
           <Form.Item
             name="project"
@@ -445,7 +463,7 @@ const EditTask: React.FC<TasksProps> = ({
             onClick={handleReset}
             style={{ marginLeft: 8 }}
           >
-            Reset
+            Restore
           </Button>
         </Form>
       ) : (
