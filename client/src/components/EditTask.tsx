@@ -43,6 +43,7 @@ const EditTask: React.FC<TasksProps> = ({
   const [form] = Form.useForm();
   const [isFormDataFormatted, setIsFormDataFormatted] = useState(false);
   const [defaultValues, setDefaultValues] = useState<any>(null);
+  const [taskId, setTaskId] = useState<number>(-1);
 
   const handleAddProjectModal = () => {
     setShowHideAddProjectModal(true);
@@ -263,6 +264,7 @@ const EditTask: React.FC<TasksProps> = ({
 
         console.log(numArr);
 
+        setTaskId(numArr[0]);
         loadTask(numArr[0]);
       }
     }
@@ -272,24 +274,36 @@ const EditTask: React.FC<TasksProps> = ({
     setFormData({
       ...defaultValues,
     });
+
+    form.resetFields();
   }, [defaultValues]);
 
   const saveEditTaskCallAPI = async () => {
     try {
       console.log("handleSubmit - ", formData);
 
-      const response = await axios.post(
-        "http://localhost:3000/api/addtask",
+      const response = await axios.put(
+        `http://localhost:3000/api/edittask/${taskId}`,
         formData
       );
       console.log("API Response:", response.data);
 
-      setFormData({});
       setIsFormDataFormatted(false);
-      form.resetFields();
       setTasksPageLoaded(false);
       setProjectsLoaded(false);
       setTasksLoaded(false);
+      setDefaultValues({
+        name: formData.name,
+        project: formData.project,
+        priority: formData.priority,
+        startdate: formData.startdate,
+        starttime: formData.starttime,
+        start_date_time: formData.start_date_time,
+        duedate: formData.duedate,
+        duetime: formData.duetime,
+        due_date_time: formData.due_date_time,
+        recurring_string: formData.recurring == 0 ? "no" : "yes",
+      });
     } catch (error) {
       console.error("error calling API : ", error);
     }
