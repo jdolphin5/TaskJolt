@@ -231,6 +231,11 @@ const AddTask: React.FC<TasksProps> = ({
 
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
+      <Button.Group style={{ padding: "10px 0px 0px 0px" }}>
+        <Button type="link" onClick={handleBackButtonClick}>
+          &lt; Go back
+        </Button>
+      </Button.Group>
       {showHideAddProjectModal && (
         <AddProjectModal
           tasksPageLoaded={tasksPageLoaded}
@@ -400,12 +405,6 @@ const AddTask: React.FC<TasksProps> = ({
           Reset
         </Button>
       </Form>
-
-      <Button.Group style={{ padding: "10px 0px 0px 0px" }}>
-        <Button type="link" onClick={handleBackButtonClick}>
-          &lt; Go back
-        </Button>
-      </Button.Group>
     </div>
   );
 };
