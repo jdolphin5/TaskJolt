@@ -81,16 +81,11 @@ app.get("/api/tasks", async (req: any, res: any) => {
 app.get("/api/notes/:id", async (req: any, res: any) => {
   try {
     async function main() {
-      const { tasksObject } = req.query;
-
-      const taskIdArray = tasksObject.split(",").map(Number);
+      const taskId: number = parseInt(req.params.id);
+      console.log(taskId);
 
       const data = await prisma.notes.findMany({
-        where: {
-          task_id: {
-            in: taskIdArray,
-          },
-        },
+        where: { task_id: taskId },
       });
       res.json(data);
     }
@@ -170,6 +165,40 @@ app.post("/api/addtask", async (req: any, res: any) => {
         },
       });
       console.log("New task created:", newTask);
+      res.status(200).json({ message: "Form data received successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error creating project:", error);
+  }
+});
+
+app.post("/api/addnote", async (req: any, res: any) => {
+  const formData = req.body;
+
+  console.log("Received form data:", formData);
+
+  if (formData === undefined) {
+    console.log("received req.body is undefined");
+  }
+  try {
+    async function main() {
+      const newNote = await prisma.notes.create({
+        data: {
+          task_id: formData.task_id,
+          message: formData.message,
+        },
+      });
+      console.log("New note created:", newNote);
       res.status(200).json({ message: "Form data received successfully!" });
     }
 
