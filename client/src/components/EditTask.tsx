@@ -4,6 +4,7 @@ import {
   Select,
   Input,
   DatePicker,
+  Table,
   TimePicker,
   Radio,
   Button,
@@ -41,9 +42,18 @@ const EditTask: React.FC<TasksProps> = ({
 
   const [showHideAddProjectModal, setShowHideAddProjectModal] = useState(false);
   const [form] = Form.useForm();
+  const [messageForm] = Form.useForm();
   const [isFormDataFormatted, setIsFormDataFormatted] = useState(false);
   const [defaultValues, setDefaultValues] = useState<any>(null);
   const [taskId, setTaskId] = useState<number>(-1);
+  const [messageFormData, setMessageFormData] = useState<string>("");
+  const [formattedMessageFormData, setFormattedMessageFormData] =
+    useState<FormattedMessageFormData>({});
+  const [isMessageFormDataFormatted, setIsMessageFormDataFormatted] =
+    useState<boolean>(false);
+  const [notesLoaded, setNotesLoaded] = useState<boolean>(false);
+  const [notesData, setNotesData] = useState<Note[] | null>(null);
+  const [formattedNotesData, setFormattedNotesData] = useState<Note[]>([]);
 
   const handleAddProjectModal = () => {
     setShowHideAddProjectModal(true);
@@ -62,6 +72,17 @@ const EditTask: React.FC<TasksProps> = ({
     recurring_string?: string;
     recurring?: number;
   }>({});
+
+  interface FormattedMessageFormData {
+    task_id?: number;
+    message?: string;
+  }
+
+  interface Note {
+    id?: number;
+    task_id?: number;
+    message?: string;
+  }
 
   const handleSelectChange = (value: any, field: string) => {
     setFormData({ ...formData, [field]: value });
@@ -309,8 +330,152 @@ const EditTask: React.FC<TasksProps> = ({
     }
   };
 
+  const handleSubmitMessage = async () => {
+    try {
+      await formatMessageFormData();
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
+  const onChangeMessage = (e: any) => {
+    setMessageFormData(e.target.value);
+  };
+
+  const formatMessageFormData = async () => {
+    try {
+      setFormattedMessageFormData({
+        ...formattedMessageFormData,
+        task_id: taskId,
+        message: messageFormData,
+      });
+
+      setIsMessageFormDataFormatted(true);
+    } catch (error) {
+      console.error("Error combining date and time:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (isMessageFormDataFormatted) {
+      addNoteCallAPI();
+    }
+
+    setIsMessageFormDataFormatted(false);
+  }, [isMessageFormDataFormatted]);
+
+  const addNoteCallAPI = async () => {
+    try {
+      console.log("handleMessageSubmit - messageFormData -", messageFormData);
+      console.log(
+        "handleMessageSubmit - formattedMessageFormData -",
+        formattedMessageFormData
+      );
+
+      const response = await axios.post(
+        `http://localhost:3000/api/addnote`,
+        formattedMessageFormData
+      );
+      console.log("API Response:", response.data);
+
+      setIsMessageFormDataFormatted(false);
+      setNotesLoaded(false);
+    } catch (error) {
+      console.error("error calling API : ", error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("messageFormData:", messageFormData);
+  }, [messageFormData]);
+
+  useEffect(() => {
+    if (!notesLoaded) {
+      const loadNotes = async () => {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          setNotesLoaded(true);
+        } catch (error) {
+          console.error("Error loading notes: ", error);
+        }
+      };
+
+      loadNotes();
+    }
+  }, [notesLoaded, taskId]);
+
+  async function fetchNotesData() {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/notes/${taskId}`
+      );
+
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  useEffect(() => {
+    if (!notesLoaded && taskId !== -1) {
+      fetchNotesData()
+        .then((notesData) => {
+          console.log("success");
+
+          setNotesData(notesData);
+          setNotesLoaded(true);
+        })
+        .catch((error) => {
+          console.error("Error fetching notes data:", error);
+        });
+    }
+  }, [notesLoaded, taskId]);
+
+  const formatNotesData = (notesData: Note[]) => {
+    let newNotesData = [];
+    if (notesData !== null && notesData !== undefined) {
+      for (let i = 0; i < notesData.length; i++) {
+        const singleNote: Note = {
+          id: notesData[i].id,
+          //task_id: notesData[i].task_id,
+          message: notesData[i].message,
+        };
+
+        newNotesData.push(singleNote);
+      }
+
+      setFormattedNotesData(newNotesData);
+    }
+  };
+
+  useEffect(() => {
+    if (notesData) {
+      formatNotesData(notesData);
+    }
+    console.log("Updated notesData:", notesData);
+  }, [notesData]);
+
+  const columns = [
+    {
+      title: "Notes",
+      dataIndex: "message",
+      key: "message",
+    },
+  ];
+
+  const dataSource = formattedNotesData?.map((notes, index) => ({
+    ...notes,
+    key: index.toString(),
+  }));
+
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
+      <Button.Group style={{ padding: "10px 0px 0px 0px" }}>
+        <Button type="link" onClick={handleBackButtonClick}>
+          &lt; Go back
+        </Button>
+      </Button.Group>
       {showHideAddProjectModal && (
         <AddProjectModal
           tasksPageLoaded={tasksPageLoaded}
@@ -328,7 +493,7 @@ const EditTask: React.FC<TasksProps> = ({
         />
       )}
       <h1 style={{ margin: "0px 0px 10px 0px", textAlign: "center" }}>
-        Edit Task
+        View/Edit Task
       </h1>
       {defaultValues ? (
         <Form
@@ -483,11 +648,43 @@ const EditTask: React.FC<TasksProps> = ({
       ) : (
         "Form data not loaded"
       )}
-      <Button.Group style={{ padding: "10px 0px 0px 0px" }}>
-        <Button type="link" onClick={handleBackButtonClick}>
-          &lt; Go back
-        </Button>
-      </Button.Group>
+      <div style={{ padding: "15px 0px 15px 0px" }}>
+        <div style={{ padding: "5px 0px 10px 0px" }}>
+          <Table
+            dataSource={dataSource}
+            columns={columns}
+            pagination={{ pageSize: 8 }}
+          />
+        </div>
+
+        <Form
+          labelCol={{
+            span: 4,
+          }}
+          wrapperCol={{
+            span: 14,
+          }}
+          layout="horizontal"
+          style={{
+            maxWidth: 600,
+          }}
+          onFinish={handleSubmitMessage}
+          form={messageForm}
+        >
+          <Form.Item name="message">
+            <Input
+              showCount
+              maxLength={300}
+              onChange={onChangeMessage}
+              placeholder="Enter a note about the task here"
+              style={{ height: "80px" }}
+            />
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Add Note
+          </Button>
+        </Form>
+      </div>
     </div>
   );
 };
