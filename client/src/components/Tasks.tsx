@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button } from "antd";
+import { Table, Tabs, Button } from "antd";
+import type { TabsProps } from "antd";
 import { Link } from "react-router-dom";
 import { Task, TasksProps } from "./Types";
+import TasksTable from "./TasksTable";
 
 const Tasks: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -26,6 +28,7 @@ const Tasks: React.FC<TasksProps> = ({
       duedate: "2/2/22",
       duetime: "09:00",
       recurring: "no",
+      is_complete: 0,
     },
   ]);
 
@@ -123,6 +126,7 @@ const Tasks: React.FC<TasksProps> = ({
               duedate: formattedDueDate,
               duetime: dueFormattedTime,
               recurring: isRecurring,
+              is_complete: taskData[i].is_complete,
             };
             newTaskData.push(singleTask);
           }
@@ -187,29 +191,61 @@ const Tasks: React.FC<TasksProps> = ({
     },
   ];
 
-  const dataSource = formattedTaskData?.map((task, index) => ({
+  let ongoingTasks: Task[] = [];
+
+  if (formattedTaskData) {
+    ongoingTasks = formattedTaskData.filter((task) => task.is_complete === 0);
+  }
+
+  const ongoingTasksDataSource = ongoingTasks.map((task, index) => ({
     ...task,
   }));
+
+  let completeTasks: Task[] = [];
+
+  if (formattedTaskData) {
+    completeTasks = formattedTaskData.filter((task) => task.is_complete === 1);
+  }
+
+  const completeTasksDataSource = completeTasks.map((task, index) => ({
+    ...task,
+  }));
+
+  const onChange = (key: string) => {
+    console.log(key);
+  };
+
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "Ongoing",
+      children: (
+        <TasksTable
+          dataSource={ongoingTasksDataSource}
+          columns={columns}
+          pageSize={15}
+        />
+      ),
+    },
+    {
+      key: "2",
+      label: "Completed",
+      children: (
+        <TasksTable
+          dataSource={completeTasksDataSource}
+          columns={columns}
+          pageSize={15}
+        />
+      ),
+    },
+  ];
 
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
       <h1 style={{ margin: "0px 0px 10px 0px", textAlign: "center" }}>
         Task List
       </h1>
-      <div style={{ margin: "0px 0px 10px 0px" }}>
-        <Table
-          dataSource={dataSource}
-          columns={columns}
-          pagination={{ pageSize: 15 }}
-        />
-        <Link to="../AddTask">
-          <Button>Add task</Button>
-        </Link>
-        <p>
-          To view a task's notes, or to edit a task, simply click on the task
-          name.
-        </p>
-      </div>
+      <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
     </div>
   );
 };

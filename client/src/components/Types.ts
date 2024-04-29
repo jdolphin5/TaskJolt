@@ -11,6 +11,12 @@ export interface TasksProps {
   setTaskData: React.Dispatch<React.SetStateAction<any>>;
 }
 
+export interface TasksTableProps {
+  dataSource: any;
+  columns: any;
+  pageSize: number;
+}
+
 export type Task = {
   key: number;
   projectName: string | undefined;
@@ -21,6 +27,7 @@ export type Task = {
   duedate: string;
   duetime: string;
   recurring: string;
+  is_complete: number;
 };
 
 export type FormattedTask = {

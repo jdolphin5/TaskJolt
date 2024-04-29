@@ -71,6 +71,7 @@ const EditTask: React.FC<TasksProps> = ({
     due_date_time?: string;
     recurring_string?: string;
     recurring?: number;
+    is_complete?: number;
   }>({});
 
   interface FormattedMessageFormData {
@@ -263,6 +264,7 @@ const EditTask: React.FC<TasksProps> = ({
       duetime: dateObjectDueDate,
       due_date_time: myTask.due_date_time,
       recurring_string: myTask.recurring == 0 ? "no" : "yes",
+      is_complete: myTask.is_complete,
     });
   };
 
@@ -324,6 +326,7 @@ const EditTask: React.FC<TasksProps> = ({
         duetime: formData.duetime,
         due_date_time: formData.due_date_time,
         recurring_string: formData.recurring == 0 ? "no" : "yes",
+        is_complete: formData.is_complete,
       });
     } catch (error) {
       console.error("error calling API : ", error);
