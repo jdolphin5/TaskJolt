@@ -8,3 +8,4 @@ server/dist
 server/sql
 server/.env
 client/src/template
+server/prisma/migrations/
