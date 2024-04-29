@@ -162,6 +162,7 @@ app.post("/api/addtask", async (req: any, res: any) => {
           due_date_time: isoDueDate,
           recurring: formData.recurring,
           project_id: formData.project,
+          is_complete: 0,
         },
       });
       console.log("New task created:", newTask);
@@ -240,6 +241,7 @@ app.put("/api/edittask/:id", async (req: any, res: any) => {
           due_date_time: isoDueDate,
           recurring: formData.recurring,
           project_id: formData.project,
+          is_complete: formData.is_complete,
         },
       });
       console.log("task updated:", updatedTask);
