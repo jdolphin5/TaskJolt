@@ -36,6 +36,7 @@ model task {
   due_date_time   DateTime     @db.DateTime(0)
   recurring       Int          @db.SmallInt
   project_id      Int          @db.SmallInt
+  is_complete     Int          @db.SmallInt
   notes           notes[]
   project         project      @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "task_project_id")
   task_tags       task_tags[]  @ignore
