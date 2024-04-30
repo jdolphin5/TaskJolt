@@ -8,6 +8,7 @@ import {
   TimePicker,
   Radio,
   Button,
+  Checkbox,
 } from "antd";
 import AddProjectModal from "./AddProjectModal";
 import { Task, FormattedTask, TasksProps } from "./Types";
@@ -116,6 +117,10 @@ const EditTask: React.FC<TasksProps> = ({
 
   const handleRadioChange = (e: RadioChangeEvent) => {
     setFormData({ ...formData, recurring_string: e.target.value });
+  };
+
+  const handleCheckboxChange = (value: any) => {
+    setFormData({ ...formData, is_complete: value.target.checked ? 1 : 0 });
   };
 
   useEffect(() => {
@@ -636,6 +641,12 @@ const EditTask: React.FC<TasksProps> = ({
               <Radio value="yes">Yes</Radio>
               <Radio value="no">No</Radio>
             </Radio.Group>
+          </Form.Item>
+          <Form.Item name="is_complete_checkbox" label="Completed">
+            <Checkbox
+              checked={formData.is_complete === 1}
+              onChange={handleCheckboxChange}
+            />
           </Form.Item>
           <Button type="primary" htmlType="submit">
             Save
