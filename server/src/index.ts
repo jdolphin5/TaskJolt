@@ -179,7 +179,7 @@ app.post("/api/addtask", async (req: any, res: any) => {
         process.exit(1);
       });
   } catch (error) {
-    console.error("Error creating project:", error);
+    console.error("Error adding task:", error);
   }
 });
 
@@ -213,7 +213,7 @@ app.post("/api/addnote", async (req: any, res: any) => {
         process.exit(1);
       });
   } catch (error) {
-    console.error("Error creating project:", error);
+    console.error("Error adding note:", error);
   }
 });
 
@@ -258,7 +258,61 @@ app.put("/api/edittask/:id", async (req: any, res: any) => {
         process.exit(1);
       });
   } catch (error) {
-    console.error("Error creating project:", error);
+    console.error("Error editing task:", error);
+  }
+});
+
+app.delete("/api/deletenotes/:id", async (req: any, res: any) => {
+  const taskId = parseInt(req.params.id);
+
+  //name, priority, start_date_time, due_date_time, recurring, project_id
+  try {
+    async function main() {
+      const deletedNotes = await prisma.notes.deleteMany({
+        where: { task_id: taskId },
+      });
+      console.log("notes deleted:", deletedNotes);
+      res.status(200).json({ message: "Notes deleted successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error deleting notes:", error);
+  }
+});
+
+app.delete("/api/deletetask/:id", async (req: any, res: any) => {
+  const taskId = parseInt(req.params.id);
+
+  //name, priority, start_date_time, due_date_time, recurring, project_id
+  try {
+    async function main() {
+      const deletedTask = await prisma.task.delete({
+        where: { id: taskId },
+      });
+      console.log("task deleted:", deletedTask);
+      res.status(200).json({ message: "Task deleted successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error deleting project:", error);
   }
 });
 
