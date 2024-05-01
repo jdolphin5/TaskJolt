@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Table, Tabs, Button } from "antd";
+import { Tabs, Button } from "antd";
 import type { TabsProps } from "antd";
 import { Link } from "react-router-dom";
 import { Task, TasksProps } from "./Types";
 import TasksTable from "./TasksTable";
+import axios from "axios";
 
 const Tasks: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -29,6 +30,7 @@ const Tasks: React.FC<TasksProps> = ({
       duetime: "09:00",
       recurring: "no",
       is_complete: 0,
+      delete: <Button>Delete</Button>,
     },
   ]);
 
@@ -127,6 +129,11 @@ const Tasks: React.FC<TasksProps> = ({
               duetime: dueFormattedTime,
               recurring: isRecurring,
               is_complete: taskData[i].is_complete,
+              delete: (
+                <Button onClick={(e) => deleteTask(taskData[i].id)}>
+                  Delete
+                </Button>
+              ),
             };
             newTaskData.push(singleTask);
           }
@@ -143,6 +150,36 @@ const Tasks: React.FC<TasksProps> = ({
 
     formatTaskData(taskData);
   }, [tasksLoaded]);
+
+  const deleteTask = async (taskId: number) => {
+    console.log("delete button clicked", taskId);
+    let notesDeleted: boolean = false;
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/deletenotes/${taskId}`
+      );
+      console.log("API Response:", response.data);
+      notesDeleted = true;
+    } catch (error) {
+      console.error("error calling API : ", error);
+    }
+
+    if (notesDeleted) {
+      try {
+        const response = await axios.delete(
+          `http://localhost:3000/api/deletetask/${taskId}`
+        );
+        console.log("API Response:", response.data);
+
+        setTasksPageLoaded(false);
+        setProjectsLoaded(false);
+        setTasksLoaded(false);
+      } catch (error) {
+        console.error("error calling API : ", error);
+      }
+    }
+  };
 
   const columns = [
     {
@@ -188,6 +225,11 @@ const Tasks: React.FC<TasksProps> = ({
       title: "Recurring",
       dataIndex: "recurring",
       key: "recurring",
+    },
+    {
+      title: "Delete",
+      dataIndex: "delete",
+      key: "delete",
     },
   ];
 
