@@ -1,3 +1,5 @@
+import { ReactElement } from "react";
+
 export interface TasksProps {
   tasksPageLoaded: boolean;
   setTasksPageLoaded: React.Dispatch<React.SetStateAction<boolean>>;
@@ -28,6 +30,7 @@ export type Task = {
   duetime: string;
   recurring: string;
   is_complete: number;
+  delete: ReactElement;
 };
 
 export type FormattedTask = {
