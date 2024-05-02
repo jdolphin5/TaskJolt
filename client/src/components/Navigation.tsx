@@ -62,7 +62,9 @@ const Navigation: React.FC = () => {
             <li style={{ padding: "7px 0px 0px 0px" }}>
               <Link to={"/Tasks"}>Tasks</Link>
             </li>
-            <li style={{ padding: "7px 0px 0px 0px" }}>Menu Item 3</li>
+            <li style={{ padding: "7px 0px 0px 0px" }}>
+              <Link to={"/Tags"}>Tags</Link>
+            </li>
             <li style={{ padding: "7px 0px 0px 0px" }}>Menu Item 4</li>
             <li style={{ padding: "7px 0px 0px 0px" }}>Menu Item 5</li>
             <li style={{ padding: "7px 0px 0px 0px" }}>Menu Item 6</li>

@@ -4,6 +4,7 @@ import Home from "./Home";
 import Tasks from "./Tasks";
 import AddTask from "./AddTask";
 import EditTask from "./EditTask";
+import Tags from "./Tags";
 import axios from "axios";
 
 async function fetchProjectData() {
@@ -142,6 +143,7 @@ const ContentArea: React.FC = () => {
           />
         }
       />
+      <Route path="/tags" element={<Tags />} />
     </Routes>
   );
 };
