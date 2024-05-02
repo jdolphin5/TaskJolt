@@ -11,7 +11,7 @@ import {
   Checkbox,
 } from "antd";
 import AddProjectModal from "./AddProjectModal";
-import { Task, FormattedTask, TasksProps } from "./Types";
+import { Note, Task, FormattedTask, TasksProps } from "./Types";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { RadioChangeEvent } from "antd/lib/radio";
@@ -31,6 +31,11 @@ const EditTask: React.FC<TasksProps> = ({
   taskData,
   setTaskData,
 }) => {
+  interface FormattedMessageFormData {
+    task_id?: number;
+    message?: string;
+  }
+
   const history = useNavigate();
   const location = useLocation();
 
@@ -74,17 +79,6 @@ const EditTask: React.FC<TasksProps> = ({
     recurring?: number;
     is_complete?: number;
   }>({});
-
-  interface FormattedMessageFormData {
-    task_id?: number;
-    message?: string;
-  }
-
-  interface Note {
-    id?: number;
-    task_id?: number;
-    message?: string;
-  }
 
   const handleSelectChange = (value: any, field: string) => {
     setFormData({ ...formData, [field]: value });
@@ -448,6 +442,9 @@ const EditTask: React.FC<TasksProps> = ({
           id: notesData[i].id,
           //task_id: notesData[i].task_id,
           message: notesData[i].message,
+          delete: (
+            <Button onClick={(e) => deleteNote(notesData[i].id)}>Delete</Button>
+          ),
         };
 
         newNotesData.push(singleNote);
@@ -470,12 +467,31 @@ const EditTask: React.FC<TasksProps> = ({
       dataIndex: "message",
       key: "message",
     },
+    {
+      title: "Delete",
+      dataIndex: "delete",
+      key: "delete",
+    },
   ];
 
   const dataSource = formattedNotesData?.map((notes, index) => ({
     ...notes,
     key: index.toString(),
   }));
+
+  const deleteNote = async (noteId: number) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/deletenote/${noteId}`
+      );
+      console.log("API Response:", response.data);
+
+      //reload notes
+      setNotesLoaded(false);
+    } catch (error) {
+      console.error("error calling API : ", error);
+    }
+  };
 
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
