@@ -119,11 +119,11 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
           .then((projectData) => {
             console.log("success");
 
-            const filteredProjectIds = projectData?.filter(
-              (project: { id: number }) => project.id !== 2
-            );
+            //const filteredProjectIds = projectData?.filter(
+            //  (project: { id: number }) => project.id !== 2
+            //);
 
-            setProjectData(filteredProjectIds);
+            setProjectData(projectData);
           })
           .catch((error) => {
             console.error("Error fetching project data:", error);
