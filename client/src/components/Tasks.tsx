@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Task, TasksProps } from "./Types";
 import TasksTable from "./TasksTable";
 import axios from "axios";
+import dayjs from "dayjs";
 
 const Tasks: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -181,6 +182,12 @@ const Tasks: React.FC<TasksProps> = ({
     }
   };
 
+  const priorityMap = new Map<string, number>([
+    ["Low", 0],
+    ["Medium", 1],
+    ["High", 2],
+  ]);
+
   const columns = [
     {
       title: "Project Name",
@@ -200,6 +207,8 @@ const Tasks: React.FC<TasksProps> = ({
       title: "Priority",
       dataIndex: "priority",
       key: "priority",
+      sorter: (a: { priority: string }, b: { priority: string }) =>
+        (priorityMap.get(a.priority) || 0) - (priorityMap.get(b.priority) || 0),
     },
     {
       title: "Start Date",
@@ -215,6 +224,8 @@ const Tasks: React.FC<TasksProps> = ({
       title: "Due Date",
       dataIndex: "duedate",
       key: "duedate",
+      sorter: (a: { duedate: string }, b: { duedate: string }) =>
+        a.duedate > b.duedate,
     },
     {
       title: "Due Time",
