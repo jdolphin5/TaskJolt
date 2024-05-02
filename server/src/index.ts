@@ -82,7 +82,7 @@ app.get("/api/notes/:id", async (req: any, res: any) => {
   try {
     async function main() {
       const taskId: number = parseInt(req.params.id);
-      console.log(taskId);
+      console.log("sent notes for task_id:", taskId);
 
       const data = await prisma.notes.findMany({
         where: { task_id: taskId },
@@ -286,6 +286,33 @@ app.delete("/api/deletenotes/:id", async (req: any, res: any) => {
       });
   } catch (error) {
     console.error("Error deleting notes:", error);
+  }
+});
+
+app.delete("/api/deletenote/:id", async (req: any, res: any) => {
+  const noteId = parseInt(req.params.id);
+
+  //name, priority, start_date_time, due_date_time, recurring, project_id
+  try {
+    async function main() {
+      const deletedNote = await prisma.notes.delete({
+        where: { id: noteId },
+      });
+      console.log("note deleted:", deletedNote);
+      res.status(200).json({ message: "Note deleted successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error deleting note:", error);
   }
 });
 
