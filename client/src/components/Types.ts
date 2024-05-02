@@ -43,3 +43,10 @@ export type FormattedTask = {
   start_date_time: string;
   due_date_time: string;
 };
+
+export interface Note {
+  id: number;
+  task_id?: number;
+  message?: string;
+  delete?: ReactElement;
+}
