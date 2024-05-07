@@ -343,6 +343,89 @@ app.delete("/api/deletetask/:id", async (req: any, res: any) => {
   }
 });
 
+app.get("/api/tags", async (req: any, res: any) => {
+  try {
+    async function main() {
+      const data = await prisma.tags.findMany();
+      res.json(data);
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/api/addtag", async (req: any, res: any) => {
+  const formData = req.body;
+
+  console.log("Received form data:", formData);
+
+  if (formData === undefined) {
+    console.log("received req.body is undefined");
+  }
+
+  try {
+    async function main() {
+      const newTag = await prisma.tags.create({
+        data: {
+          name: formData.name,
+        },
+      });
+      console.log("New tag created:", newTag);
+      res.status(200).json({ message: "Form data received successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error creating tag:", error);
+  }
+});
+
+app.delete("/api/deletetag/:id", async (req: any, res: any) => {
+  const tagId = parseInt(req.params.id);
+
+  try {
+    async function main() {
+      const deletedTag = await prisma.tags.delete({
+        where: { id: tagId },
+      });
+      console.log("tag deleted:", deletedTag);
+      res.status(200).json({ message: "Tag deleted successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error deleting tag:", error);
+  }
+});
+
 // Serve static files from the 'dist' folder
 const distPath = path.resolve(__dirname, "../client/dist");
 app.use(express.static(distPath));
