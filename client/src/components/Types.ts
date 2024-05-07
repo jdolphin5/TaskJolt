@@ -50,3 +50,9 @@ export interface Note {
   message?: string;
   delete?: ReactElement;
 }
+
+export interface Tag {
+  id: number;
+  name: string;
+  delete?: ReactElement;
+}
