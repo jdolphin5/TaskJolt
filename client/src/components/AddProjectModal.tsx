@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactElement } from "react";
 import { Modal, Table, Button, Form, Input } from "antd";
 import axios from "axios";
 import { TasksProps } from "./Types";
@@ -48,6 +48,7 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
   interface Project {
     key: number;
     name: string;
+    delete?: ReactElement;
   }
 
   const formatProjectData = (projectData: Project[]) => {
@@ -57,6 +58,10 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
         const singleProject: Project = {
           key: projectData[i].key,
           name: projectData[i].name,
+          delete: (
+            //onClick={(e) => deleteProject(projectData[i].key)}>
+            <Button>Delete</Button>
+          ),
         };
 
         newProjectData.push(singleProject);
@@ -87,6 +92,11 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
       title: "Current Projects List",
       dataIndex: "name",
       key: "name",
+    },
+    {
+      title: "Delete",
+      dataIndex: "delete",
+      key: "delete",
     },
   ];
 
@@ -133,6 +143,51 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
       console.error("Error submitting form:", error);
     }
   };
+
+  /*
+
+  const deleteProject = async (projectId: number) => {
+    console.log("delete button clicked", projectId);
+
+    let tasksDeleted: boolean = false;
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/deletetasks/${projectId}`
+      );
+      console.log("API Response:", response.data);
+      tasksDeleted = true;
+    } catch (error) {
+      console.error("error calling API : ", error);
+    }
+
+    if (tasksDeleted) {
+      try {
+        const response = await axios.delete(
+          `http://localhost:3000/api/deleteproject/${projectId}`
+        );
+        console.log("API Response:", response.data);
+
+        fetchProjectData()
+          .then((projectData) => {
+            console.log("success");
+
+            //const filteredProjectIds = projectData?.filter(
+            //  (project: { id: number }) => project.id !== 2
+            //);
+
+            setProjectData(projectData);
+          })
+          .catch((error) => {
+            console.error("Error fetching project data:", error);
+          });
+      } catch (error) {
+        console.error("error calling API : ", error);
+      }
+    }
+  };
+
+  */
 
   return (
     <div>
