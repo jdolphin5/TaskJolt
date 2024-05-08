@@ -140,6 +140,60 @@ app.post("/api/addproject", async (req: any, res: any) => {
   }
 });
 
+app.delete("/api/deleteproject/:id", async (req: any, res: any) => {
+  const projectId = parseInt(req.params.id);
+
+  //name, priority, start_date_time, due_date_time, recurring, project_id
+  try {
+    async function main() {
+      const deletedProject = await prisma.project.delete({
+        where: { id: projectId },
+      });
+      console.log("project deleted:", deletedProject);
+      res.status(200).json({ message: "Project deleted successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error deleting project:", error);
+  }
+});
+
+app.delete("/api/deletetasks/:id", async (req: any, res: any) => {
+  const projectId = parseInt(req.params.id);
+
+  //name, priority, start_date_time, due_date_time, recurring, project_id
+  try {
+    async function main() {
+      const deletedTasks = await prisma.task.deleteMany({
+        where: { project_id: projectId },
+      });
+      console.log("tasks deleted:", deletedTasks);
+      res.status(200).json({ message: "Tasks deleted successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error deleting tasks:", error);
+  }
+});
+
 app.post("/api/addtask", async (req: any, res: any) => {
   const formData = req.body;
 
