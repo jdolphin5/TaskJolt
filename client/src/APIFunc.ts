@@ -37,7 +37,7 @@ export async function fetchTaskDataWithProjectData(projectData: any) {
   }
 }
 
-export async function fetchNotesData() {
+export async function fetchNotesData(taskId: number) {
   try {
     const response = await axios.get(
       `http://localhost:3000/api/notes/${taskId}`
