@@ -1,9 +1,130 @@
 import axios from "axios";
 
+export async function fetchProjectData() {
+  try {
+    const response = await axios.get("http://localhost:3000/api/projects");
+
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+export async function fetchTaskDataWithProjectData(projectData: any) {
+  try {
+    const formattedProjectIds = projectData.map((project: { id: number }) => [
+      project.id,
+    ]);
+
+    if (Array.isArray(formattedProjectIds)) {
+      const response = await axios.get(
+        `http://localhost:3000/api/tasks?projectIds=${formattedProjectIds.join(
+          ","
+        )}`
+      );
+
+      console.log(response);
+
+      return response.data;
+    } else {
+      console.log("projectIds is null");
+
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+export async function fetchNotesData() {
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/api/notes/${taskId}`
+    );
+
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+export async function fetchTagData() {
+  try {
+    const response = await axios.get("http://localhost:3000/api/tags");
+
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+export const addProject = async (formData: any) => {
+  const response = await axios.post(
+    "http://localhost:3000/api/addproject",
+    formData
+  );
+  console.log("API Response:", response.data);
+};
+
+export const addNote = async (formData: any) => {
+  const response = await axios.post(
+    `http://localhost:3000/api/addnote`,
+    formData
+  );
+  console.log("API Response:", response.data);
+};
+
+export const deleteNoteByNoteId = async (noteId: number) => {
+  const response = await axios.delete(
+    `http://localhost:3000/api/deletenote/${noteId}`
+  );
+  console.log("API Response:", response.data);
+};
+
+export const deleteNotesByTaskId = async (taskId: number) => {
+  const response = await axios.delete(
+    `http://localhost:3000/api/deletenotes/${taskId}`
+  );
+  console.log("API Response:", response.data);
+};
+
+export const addTask = async (formData: any) => {
+  const response = await axios.post(
+    "http://localhost:3000/api/addtask",
+    formData
+  );
+  console.log("API Response:", response.data);
+};
+
 export const editTaskByTaskId = async (taskId: number, formData: any) => {
   const response = await axios.put(
     `http://localhost:3000/api/edittask/${taskId}`,
     formData
+  );
+  console.log("API Response:", response.data);
+};
+
+export const deleteTaskByTaskId = async (taskId: number) => {
+  const response = await axios.delete(
+    `http://localhost:3000/api/deletetask/${taskId}`
+  );
+  console.log("API Response:", response.data);
+};
+
+export const addTag = async (formData: any) => {
+  const response = await axios.post(
+    "http://localhost:3000/api/addtag",
+    formData
+  );
+  console.log("API Response:", response.data);
+};
+
+export const deleteTagByTagId = async (tagId: number) => {
+  const response = await axios.delete(
+    `http://localhost:3000/api/deletetag/${tagId}`
   );
   console.log("API Response:", response.data);
 };
