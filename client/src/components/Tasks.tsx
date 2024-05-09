@@ -4,8 +4,7 @@ import type { TabsProps } from "antd";
 import { Link } from "react-router-dom";
 import { Task, TasksProps } from "../Types";
 import TasksTable from "./TasksTable";
-import axios from "axios";
-import dayjs from "dayjs";
+import { deleteNotesByTaskId, deleteTaskByTaskId } from "../APIFunc";
 
 const Tasks: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -157,10 +156,7 @@ const Tasks: React.FC<TasksProps> = ({
     let notesDeleted: boolean = false;
 
     try {
-      const response = await axios.delete(
-        `http://localhost:3000/api/deletenotes/${taskId}`
-      );
-      console.log("API Response:", response.data);
+      deleteNotesByTaskId(taskId);
       notesDeleted = true;
     } catch (error) {
       console.error("error calling API : ", error);
@@ -168,10 +164,7 @@ const Tasks: React.FC<TasksProps> = ({
 
     if (notesDeleted) {
       try {
-        const response = await axios.delete(
-          `http://localhost:3000/api/deletetask/${taskId}`
-        );
-        console.log("API Response:", response.data);
+        deleteTaskByTaskId(taskId);
 
         setTasksPageLoaded(false);
         setProjectsLoaded(false);

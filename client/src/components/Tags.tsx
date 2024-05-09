@@ -1,19 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, Input, Table } from "antd";
-import axios from "axios";
 import { Tag } from "../Types";
 import { ReactElement } from "react";
-
-async function fetchTagData() {
-  try {
-    const response = await axios.get("http://localhost:3000/api/tags");
-
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-}
+import { addTag, fetchTagData, deleteTagByTagId } from "../APIFunc";
 
 const Tags: React.FC = () => {
   const [formData, setFormData] = useState<{ name?: string }>({});
@@ -97,11 +86,7 @@ const Tags: React.FC = () => {
       console.log(formData);
 
       if (Object.keys(formData).length !== 0) {
-        const response = await axios.post(
-          "http://localhost:3000/api/addtag",
-          formData
-        );
-        console.log("API Response:", response.data);
+        addTag(formData);
 
         setFormData({});
 
@@ -128,10 +113,7 @@ const Tags: React.FC = () => {
 
   const deleteTag = async (tagId: number) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:3000/api/deletetag/${tagId}`
-      );
-      console.log("API Response:", response.data);
+      deleteTagByTagId(tagId);
 
       //reload tags
       setTagsPageLoaded(false);

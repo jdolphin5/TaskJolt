@@ -18,7 +18,12 @@ import { RadioChangeEvent } from "antd/lib/radio";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { editTaskByTaskId } from "../APIFunc";
+import {
+  addNote,
+  editTaskByTaskId,
+  deleteNoteByNoteId,
+  fetchNotesData,
+} from "../APIFunc";
 
 const EditTask: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -371,11 +376,7 @@ const EditTask: React.FC<TasksProps> = ({
         formattedMessageFormData
       );
 
-      const response = await axios.post(
-        `http://localhost:3000/api/addnote`,
-        formattedMessageFormData
-      );
-      console.log("API Response:", response.data);
+      addNote(formattedMessageFormData);
 
       setIsMessageFormDataFormatted(false);
       setNotesLoaded(false);
@@ -402,19 +403,6 @@ const EditTask: React.FC<TasksProps> = ({
       loadNotes();
     }
   }, [notesLoaded, taskId]);
-
-  async function fetchNotesData() {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/api/notes/${taskId}`
-      );
-
-      console.log(response);
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  }
 
   useEffect(() => {
     if (!notesLoaded && taskId !== -1) {
@@ -478,10 +466,7 @@ const EditTask: React.FC<TasksProps> = ({
 
   const deleteNote = async (noteId: number) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:3000/api/deletenote/${noteId}`
-      );
-      console.log("API Response:", response.data);
+      deleteNoteByNoteId(noteId);
 
       //reload notes
       setNotesLoaded(false);

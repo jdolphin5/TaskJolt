@@ -5,44 +5,7 @@ import Tasks from "./Tasks";
 import AddTask from "./AddTask";
 import EditTask from "./EditTask";
 import Tags from "./Tags";
-import axios from "axios";
-
-async function fetchProjectData() {
-  try {
-    const response = await axios.get("http://localhost:3000/api/projects");
-
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-}
-
-async function fetchTaskData(projectData: any) {
-  try {
-    const formattedProjectIds = projectData.map((project: { id: number }) => [
-      project.id,
-    ]);
-
-    if (Array.isArray(formattedProjectIds)) {
-      const response = await axios.get(
-        `http://localhost:3000/api/tasks?projectIds=${formattedProjectIds.join(
-          ","
-        )}`
-      );
-
-      console.log(response);
-
-      return response.data;
-    } else {
-      console.log("projectIds is null");
-
-      return null;
-    }
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-}
+import { fetchProjectData, fetchTaskDataWithProjectData } from "../APIFunc";
 
 const ContentArea: React.FC = () => {
   const [tasksPageLoaded, setTasksPageLoaded] = useState(false);
@@ -80,7 +43,7 @@ const ContentArea: React.FC = () => {
 
   useEffect(() => {
     if (projectsLoaded) {
-      fetchTaskData(projectData).then((tasksLoadedData) => {
+      fetchTaskDataWithProjectData(projectData).then((tasksLoadedData) => {
         console.log("success tasks loaded");
         const formattedTaskData = tasksLoadedData;
         setTaskData(formattedTaskData);

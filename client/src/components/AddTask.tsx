@@ -11,8 +11,8 @@ import {
 import AddProjectModal from "./AddProjectModal";
 import { TasksProps } from "../Types";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { RadioChangeEvent } from "antd/lib/radio";
+import { addTask } from "../APIFunc";
 
 //('Task 1', 'High', '2024-04-06 09:00:00', '2024-04-07 17:00:00', 0, 1),
 const AddTask: React.FC<TasksProps> = ({
@@ -155,11 +155,7 @@ const AddTask: React.FC<TasksProps> = ({
     try {
       console.log("handleSubmit - ", formData);
 
-      const response = await axios.post(
-        "http://localhost:3000/api/addtask",
-        formData
-      );
-      console.log("API Response:", response.data);
+      addTask(formData);
 
       setFormData({});
       setIsFormDataFormatted(false);

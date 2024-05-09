@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactElement } from "react";
 import { Modal, Table, Button, Form, Input } from "antd";
-import axios from "axios";
 import { TasksProps } from "../Types";
+import { addProject, fetchProjectData } from "../APIFunc";
 
 interface AddProjectProps extends TasksProps {
   showHideAddProjectModal: boolean;
@@ -10,17 +10,6 @@ interface AddProjectProps extends TasksProps {
   setProjectsLoaded: React.Dispatch<React.SetStateAction<boolean>>;
   projectData: any;
   setProjectData: React.Dispatch<React.SetStateAction<any>>;
-}
-
-async function fetchProjectData() {
-  try {
-    const response = await axios.get("http://localhost:3000/api/projects");
-
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
 }
 
 const AddProjectModal: React.FC<AddProjectProps> = ({
@@ -117,11 +106,7 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
       console.log(formData);
 
       if (Object.keys(formData).length !== 0) {
-        const response = await axios.post(
-          "http://localhost:3000/api/addproject",
-          formData
-        );
-        console.log("API Response:", response.data);
+        addProject(formData);
 
         setFormData({});
 
