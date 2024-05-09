@@ -18,6 +18,7 @@ import { RadioChangeEvent } from "antd/lib/radio";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { editTaskByTaskId } from "../APIFunc";
 
 const EditTask: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -304,11 +305,7 @@ const EditTask: React.FC<TasksProps> = ({
     try {
       console.log("handleSubmit - ", formData);
 
-      const response = await axios.put(
-        `http://localhost:3000/api/edittask/${taskId}`,
-        formData
-      );
-      console.log("API Response:", response.data);
+      editTaskByTaskId(taskId, formData);
 
       setIsFormDataFormatted(false);
       setTasksPageLoaded(false);
