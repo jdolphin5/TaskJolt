@@ -9,7 +9,7 @@ import {
   Button,
 } from "antd";
 import AddProjectModal from "./AddProjectModal";
-import { TasksProps } from "./Types";
+import { TasksProps } from "../Types";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { RadioChangeEvent } from "antd/lib/radio";

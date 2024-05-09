@@ -11,7 +11,7 @@ import {
   Checkbox,
 } from "antd";
 import AddProjectModal from "./AddProjectModal";
-import { Note, Task, FormattedTask, TasksProps } from "./Types";
+import { Note, Task, FormattedTask, TasksProps } from "../Types";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { RadioChangeEvent } from "antd/lib/radio";

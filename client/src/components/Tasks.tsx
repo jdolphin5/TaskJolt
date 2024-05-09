@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Tabs, Button } from "antd";
 import type { TabsProps } from "antd";
 import { Link } from "react-router-dom";
-import { Task, TasksProps } from "./Types";
+import { Task, TasksProps } from "../Types";
 import TasksTable from "./TasksTable";
 import axios from "axios";
 import dayjs from "dayjs";

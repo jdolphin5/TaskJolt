@@ -1,5 +1,5 @@
 import React from "react";
-import { TasksTableProps } from "./Types";
+import { TasksTableProps } from "../Types";
 import { Table, Button } from "antd";
 import { Link } from "react-router-dom";
 

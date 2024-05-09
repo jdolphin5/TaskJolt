@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactElement } from "react";
 import { Modal, Table, Button, Form, Input } from "antd";
 import axios from "axios";
-import { TasksProps } from "./Types";
+import { TasksProps } from "../Types";
 
 interface AddProjectProps extends TasksProps {
   showHideAddProjectModal: boolean;

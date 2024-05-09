@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, Input, Table } from "antd";
 import axios from "axios";
-import { Tag } from "./Types";
+import { Tag } from "../Types";
 import { ReactElement } from "react";
 
 async function fetchTagData() {
