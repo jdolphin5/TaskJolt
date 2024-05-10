@@ -1,7 +1,12 @@
 import React, { useState, useEffect, ReactElement } from "react";
 import { Modal, Table, Button, Form, Input } from "antd";
 import { TasksProps } from "../Types";
-import { addProject, fetchProjectData } from "../APIFunc";
+import {
+  addProject,
+  fetchProjectData,
+  deleteTasksByProjectId,
+  deleteProjectByProjectId,
+} from "../APIFunc";
 
 interface AddProjectProps extends TasksProps {
   showHideAddProjectModal: boolean;
@@ -35,7 +40,7 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
   };
 
   interface Project {
-    key: number;
+    id: number;
     name: string;
     delete?: ReactElement;
   }
@@ -45,11 +50,12 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
     if (projectData !== null && projectData !== undefined) {
       for (let i = 0; i < projectData.length; i++) {
         const singleProject: Project = {
-          key: projectData[i].key,
+          id: projectData[i].id,
           name: projectData[i].name,
           delete: (
-            //onClick={(e) => deleteProject(projectData[i].key)}>
-            <Button>Delete</Button>
+            <Button onClick={(e) => deleteProject(projectData[i].id)}>
+              Delete
+            </Button>
           ),
         };
 
@@ -64,7 +70,7 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
     Project[] | null
   >([
     {
-      key: 3,
+      id: 3,
       name: "No projects",
     },
   ]);
@@ -106,17 +112,13 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
       console.log(formData);
 
       if (Object.keys(formData).length !== 0) {
-        addProject(formData);
+        await addProject(formData);
 
         setFormData({});
 
         fetchProjectData()
           .then((projectData) => {
             console.log("success");
-
-            //const filteredProjectIds = projectData?.filter(
-            //  (project: { id: number }) => project.id !== 2
-            //);
 
             setProjectData(projectData);
           })
@@ -129,18 +131,14 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
     }
   };
 
-  /*
-
   const deleteProject = async (projectId: number) => {
     console.log("delete button clicked", projectId);
 
     let tasksDeleted: boolean = false;
 
     try {
-      const response = await axios.delete(
-        `http://localhost:3000/api/deletetasks/${projectId}`
-      );
-      console.log("API Response:", response.data);
+      await deleteTasksByProjectId(projectId);
+
       tasksDeleted = true;
     } catch (error) {
       console.error("error calling API : ", error);
@@ -148,20 +146,16 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
 
     if (tasksDeleted) {
       try {
-        const response = await axios.delete(
-          `http://localhost:3000/api/deleteproject/${projectId}`
-        );
-        console.log("API Response:", response.data);
+        await deleteProjectByProjectId(projectId);
 
         fetchProjectData()
           .then((projectData) => {
             console.log("success");
 
-            //const filteredProjectIds = projectData?.filter(
-            //  (project: { id: number }) => project.id !== 2
-            //);
-
             setProjectData(projectData);
+            setTasksPageLoaded(false);
+            setProjectsLoaded(false);
+            setTasksLoaded(false);
           })
           .catch((error) => {
             console.error("Error fetching project data:", error);
@@ -171,8 +165,6 @@ const AddProjectModal: React.FC<AddProjectProps> = ({
       }
     }
   };
-
-  */
 
   return (
     <div>
