@@ -37,6 +37,66 @@ app.get("/api/projects", async (req: any, res: any) => {
   }
 });
 
+app.post("/api/addproject", async (req: any, res: any) => {
+  const formData = req.body;
+
+  console.log("Received form data:", formData);
+
+  if (formData === undefined) {
+    console.log("received req.body is undefined");
+  }
+
+  try {
+    async function main() {
+      const newProject = await prisma.project.create({
+        data: {
+          name: formData.name,
+        },
+      });
+      console.log("New project created:", newProject);
+      res.status(200).json({ message: "Form data received successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error creating project:", error);
+  }
+});
+
+app.delete("/api/deleteproject/:id", async (req: any, res: any) => {
+  const projectId = parseInt(req.params.id);
+
+  try {
+    async function main() {
+      const deletedProject = await prisma.project.delete({
+        where: { id: projectId },
+      });
+      console.log("project deleted:", deletedProject);
+      res.status(200).json({ message: "Project deleted successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error deleting project:", error);
+  }
+});
+
 app.get("/api/tasks", async (req: any, res: any) => {
   try {
     async function main() {
@@ -75,122 +135,6 @@ app.get("/api/tasks", async (req: any, res: any) => {
     console.error("Error fetching data:", error);
 
     res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.get("/api/notes/:id", async (req: any, res: any) => {
-  try {
-    async function main() {
-      const taskId: number = parseInt(req.params.id);
-      console.log("sent notes for task_id:", taskId);
-
-      const data = await prisma.notes.findMany({
-        where: { task_id: taskId },
-      });
-      res.json(data);
-    }
-
-    main()
-      .then(async () => {
-        await prisma.$disconnect();
-      })
-      .catch(async (e: any) => {
-        console.error(e);
-        await prisma.$disconnect();
-        process.exit(1);
-      });
-  } catch (error) {
-    console.error("Error fetching data:", error);
-
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.post("/api/addproject", async (req: any, res: any) => {
-  const formData = req.body;
-
-  console.log("Received form data:", formData);
-
-  if (formData === undefined) {
-    console.log("received req.body is undefined");
-  }
-
-  try {
-    async function main() {
-      const newProject = await prisma.project.create({
-        data: {
-          name: formData.name,
-        },
-      });
-      console.log("New project created:", newProject);
-      res.status(200).json({ message: "Form data received successfully!" });
-    }
-
-    main()
-      .then(async () => {
-        await prisma.$disconnect();
-      })
-      .catch(async (e: any) => {
-        console.error(e);
-        await prisma.$disconnect();
-        process.exit(1);
-      });
-  } catch (error) {
-    console.error("Error creating project:", error);
-  }
-});
-
-app.delete("/api/deleteproject/:id", async (req: any, res: any) => {
-  const projectId = parseInt(req.params.id);
-
-  //name, priority, start_date_time, due_date_time, recurring, project_id
-  try {
-    async function main() {
-      const deletedProject = await prisma.project.delete({
-        where: { id: projectId },
-      });
-      console.log("project deleted:", deletedProject);
-      res.status(200).json({ message: "Project deleted successfully!" });
-    }
-
-    main()
-      .then(async () => {
-        await prisma.$disconnect();
-      })
-      .catch(async (e: any) => {
-        console.error(e);
-        await prisma.$disconnect();
-        process.exit(1);
-      });
-  } catch (error) {
-    console.error("Error deleting project:", error);
-  }
-});
-
-app.delete("/api/deletetasks/:id", async (req: any, res: any) => {
-  const projectId = parseInt(req.params.id);
-
-  //name, priority, start_date_time, due_date_time, recurring, project_id
-  try {
-    async function main() {
-      const deletedTasks = await prisma.task.deleteMany({
-        where: { project_id: projectId },
-      });
-      console.log("tasks deleted:", deletedTasks);
-      res.status(200).json({ message: "Tasks deleted successfully!" });
-    }
-
-    main()
-      .then(async () => {
-        await prisma.$disconnect();
-      })
-      .catch(async (e: any) => {
-        console.error(e);
-        await prisma.$disconnect();
-        process.exit(1);
-      });
-  } catch (error) {
-    console.error("Error deleting tasks:", error);
   }
 });
 
@@ -237,24 +181,17 @@ app.post("/api/addtask", async (req: any, res: any) => {
   }
 });
 
-app.post("/api/addnote", async (req: any, res: any) => {
-  const formData = req.body;
+app.delete("/api/deletetasks/:id", async (req: any, res: any) => {
+  const projectId = parseInt(req.params.id);
 
-  console.log("Received form data:", formData);
-
-  if (formData === undefined) {
-    console.log("received req.body is undefined");
-  }
+  //name, priority, start_date_time, due_date_time, recurring, project_id
   try {
     async function main() {
-      const newNote = await prisma.notes.create({
-        data: {
-          task_id: formData.task_id,
-          message: formData.message,
-        },
+      const deletedTasks = await prisma.task.deleteMany({
+        where: { project_id: projectId },
       });
-      console.log("New note created:", newNote);
-      res.status(200).json({ message: "Form data received successfully!" });
+      console.log("tasks deleted:", deletedTasks);
+      res.status(200).json({ message: "Tasks deleted successfully!" });
     }
 
     main()
@@ -267,7 +204,7 @@ app.post("/api/addnote", async (req: any, res: any) => {
         process.exit(1);
       });
   } catch (error) {
-    console.error("Error adding note:", error);
+    console.error("Error deleting tasks:", error);
   }
 });
 
@@ -313,6 +250,137 @@ app.put("/api/edittask/:id", async (req: any, res: any) => {
       });
   } catch (error) {
     console.error("Error editing task:", error);
+  }
+});
+
+app.delete("/api/deletetask/:id", async (req: any, res: any) => {
+  const taskId = parseInt(req.params.id);
+
+  //name, priority, start_date_time, due_date_time, recurring, project_id
+  try {
+    async function main() {
+      const deletedTask = await prisma.task.delete({
+        where: { id: taskId },
+      });
+      console.log("task deleted:", deletedTask);
+      res.status(200).json({ message: "Task deleted successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error deleting project:", error);
+  }
+});
+
+//deleteTasksByProjectId - 1-Many
+app.delete("/api/deletetasks/:id", async (req: any, res: any) => {
+  const projectId = parseInt(req.params.id);
+
+  try {
+    async function main() {
+      const existingTasks = await prisma.task.findMany({
+        where: {
+          project_id: projectId,
+        },
+      });
+
+      if (existingTasks.length === 0) {
+        console.log(`No tasks found with projectId ${projectId}`);
+        // Handle the case where no tasks are found
+      } else {
+        // Delete the tasks
+        const deletedTasks = await prisma.task.deleteMany({
+          where: {
+            project_id: projectId,
+          },
+        });
+        console.log(
+          `${deletedTasks.length} tasks deleted for projectId ${projectId}`
+        );
+      }
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error deleting tasks:", error);
+  }
+});
+
+app.get("/api/notes/:id", async (req: any, res: any) => {
+  try {
+    async function main() {
+      const taskId: number = parseInt(req.params.id);
+      console.log("sent notes for task_id:", taskId);
+
+      const data = await prisma.notes.findMany({
+        where: { task_id: taskId },
+      });
+      res.json(data);
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/api/addnote", async (req: any, res: any) => {
+  const formData = req.body;
+
+  console.log("Received form data:", formData);
+
+  if (formData === undefined) {
+    console.log("received req.body is undefined");
+  }
+  try {
+    async function main() {
+      const newNote = await prisma.notes.create({
+        data: {
+          task_id: formData.task_id,
+          message: formData.message,
+        },
+      });
+      console.log("New note created:", newNote);
+      res.status(200).json({ message: "Form data received successfully!" });
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error adding note:", error);
   }
 });
 
@@ -367,33 +435,6 @@ app.delete("/api/deletenote/:id", async (req: any, res: any) => {
       });
   } catch (error) {
     console.error("Error deleting note:", error);
-  }
-});
-
-app.delete("/api/deletetask/:id", async (req: any, res: any) => {
-  const taskId = parseInt(req.params.id);
-
-  //name, priority, start_date_time, due_date_time, recurring, project_id
-  try {
-    async function main() {
-      const deletedTask = await prisma.task.delete({
-        where: { id: taskId },
-      });
-      console.log("task deleted:", deletedTask);
-      res.status(200).json({ message: "Task deleted successfully!" });
-    }
-
-    main()
-      .then(async () => {
-        await prisma.$disconnect();
-      })
-      .catch(async (e: any) => {
-        console.error(e);
-        await prisma.$disconnect();
-        process.exit(1);
-      });
-  } catch (error) {
-    console.error("Error deleting project:", error);
   }
 });
 
