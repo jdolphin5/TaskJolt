@@ -69,6 +69,13 @@ export const addProject = async (formData: any) => {
   console.log("API Response:", response.data);
 };
 
+export const deleteProjectByProjectId = async (projectId: number) => {
+  const response = await axios.delete(
+    `http://localhost:3000/api/deleteproject/${projectId}`
+  );
+  console.log("API Response:", response.data);
+};
+
 export const addNote = async (formData: any) => {
   const response = await axios.post(
     `http://localhost:3000/api/addnote`,
@@ -110,6 +117,13 @@ export const editTaskByTaskId = async (taskId: number, formData: any) => {
 export const deleteTaskByTaskId = async (taskId: number) => {
   const response = await axios.delete(
     `http://localhost:3000/api/deletetask/${taskId}`
+  );
+  console.log("API Response:", response.data);
+};
+
+export const deleteTasksByProjectId = async (projectId: number) => {
+  const response = await axios.delete(
+    `http://localhost:3000/api/deletetasks/${projectId}`
   );
   console.log("API Response:", response.data);
 };
