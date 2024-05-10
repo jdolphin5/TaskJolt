@@ -34,6 +34,7 @@ model task {
   priority        String       @db.Text
   start_date_time DateTime     @db.DateTime(0)
   due_date_time   DateTime     @db.DateTime(0)
+  duration        Int          @db.SmallInt @default(0)
   recurring       Int          @db.SmallInt
   project_id      Int          @db.SmallInt
   is_complete     Int          @db.SmallInt
