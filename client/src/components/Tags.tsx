@@ -86,7 +86,7 @@ const Tags: React.FC = () => {
       console.log(formData);
 
       if (Object.keys(formData).length !== 0) {
-        addTag(formData);
+        await addTag(formData);
 
         setFormData({});
 
@@ -113,7 +113,7 @@ const Tags: React.FC = () => {
 
   const deleteTag = async (tagId: number) => {
     try {
-      deleteTagByTagId(tagId);
+      await deleteTagByTagId(tagId);
 
       //reload tags
       setTagsPageLoaded(false);

@@ -155,7 +155,7 @@ const AddTask: React.FC<TasksProps> = ({
     try {
       console.log("handleSubmit - ", formData);
 
-      addTask(formData);
+      await addTask(formData);
 
       setFormData({});
       setIsFormDataFormatted(false);

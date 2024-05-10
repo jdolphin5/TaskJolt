@@ -156,7 +156,7 @@ const Tasks: React.FC<TasksProps> = ({
     let notesDeleted: boolean = false;
 
     try {
-      deleteNotesByTaskId(taskId);
+      await deleteNotesByTaskId(taskId);
       notesDeleted = true;
     } catch (error) {
       console.error("error calling API : ", error);
@@ -164,7 +164,7 @@ const Tasks: React.FC<TasksProps> = ({
 
     if (notesDeleted) {
       try {
-        deleteTaskByTaskId(taskId);
+        await deleteTaskByTaskId(taskId);
 
         setTasksPageLoaded(false);
         setProjectsLoaded(false);

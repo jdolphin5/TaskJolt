@@ -13,7 +13,6 @@ import {
 import AddProjectModal from "./AddProjectModal";
 import { Note, Task, FormattedTask, TasksProps } from "../Types";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
 import { RadioChangeEvent } from "antd/lib/radio";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -310,7 +309,7 @@ const EditTask: React.FC<TasksProps> = ({
     try {
       console.log("handleSubmit - ", formData);
 
-      editTaskByTaskId(taskId, formData);
+      await editTaskByTaskId(taskId, formData);
 
       setIsFormDataFormatted(false);
       setTasksPageLoaded(false);
@@ -376,7 +375,7 @@ const EditTask: React.FC<TasksProps> = ({
         formattedMessageFormData
       );
 
-      addNote(formattedMessageFormData);
+      await addNote(formattedMessageFormData);
 
       setIsMessageFormDataFormatted(false);
       setNotesLoaded(false);
@@ -402,11 +401,9 @@ const EditTask: React.FC<TasksProps> = ({
 
       loadNotes();
     }
-  }, [notesLoaded, taskId]);
 
-  useEffect(() => {
     if (!notesLoaded && taskId !== -1) {
-      fetchNotesData()
+      fetchNotesData(taskId)
         .then((notesData) => {
           console.log("success");
 
@@ -466,7 +463,7 @@ const EditTask: React.FC<TasksProps> = ({
 
   const deleteNote = async (noteId: number) => {
     try {
-      deleteNoteByNoteId(noteId);
+      await deleteNoteByNoteId(noteId);
 
       //reload notes
       setNotesLoaded(false);
