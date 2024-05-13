@@ -45,6 +45,7 @@ const AddTask: React.FC<TasksProps> = ({
     name?: string;
     project?: number;
     priority?: string;
+    duration?: number;
     startdate?: any;
     starttime?: any;
     start_date_time?: string;
@@ -62,6 +63,13 @@ const AddTask: React.FC<TasksProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleDurationInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: +value });
   };
 
   const handleDateTimeChange = (value: any, field: string) => {
@@ -106,6 +114,10 @@ const AddTask: React.FC<TasksProps> = ({
       }
       if (formData.priority === null) {
         console.log("priority not entered");
+        ready = false;
+      }
+      if (formData.duration == null || typeof formData.duration !== "number") {
+        console.log("duration not entered or is not a number");
         ready = false;
       }
       if (formData.startdate === null) {
@@ -332,6 +344,24 @@ const AddTask: React.FC<TasksProps> = ({
             <Select.Option value="Medium">Medium</Select.Option>
             <Select.Option value="High">High</Select.Option>
           </Select>
+        </Form.Item>
+        <Form.Item
+          name="formItemTaskDuration"
+          label="Duration"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: "Please input a task duration",
+            },
+          ]}
+          validateTrigger="onChange"
+        >
+          <Input
+            name="duration"
+            value={formData.duration}
+            onChange={handleDurationInputChange}
+          />
         </Form.Item>
         <Form.Item
           label="Start Date"

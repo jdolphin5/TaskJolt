@@ -24,6 +24,7 @@ export type Task = {
   projectName: string | undefined;
   taskName: string;
   priority: string;
+  duration: number;
   startdate: string;
   starttime: string;
   duedate: string;
@@ -37,6 +38,7 @@ export type FormattedTask = {
   id: number;
   name: string;
   priority: string;
+  duration: number;
   project: any;
   project_id: number;
   recurring: number;

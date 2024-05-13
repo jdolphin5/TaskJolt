@@ -74,6 +74,7 @@ const EditTask: React.FC<TasksProps> = ({
     name?: string;
     project?: number;
     priority?: string;
+    duration?: number | string;
     startdate?: any;
     starttime?: any;
     start_date_time?: string;
@@ -92,6 +93,13 @@ const EditTask: React.FC<TasksProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleDurationInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: +value });
   };
 
   const handleDateTimeChange = (value: any, field: string) => {
@@ -140,6 +148,10 @@ const EditTask: React.FC<TasksProps> = ({
       }
       if (formData.priority === null) {
         console.log("priority not entered");
+        ready = false;
+      }
+      if (formData.duration == null || typeof formData.duration !== "number") {
+        console.log("duration not entered or is not a number");
         ready = false;
       }
       if (formData.startdate === null) {
@@ -261,6 +273,7 @@ const EditTask: React.FC<TasksProps> = ({
       name: myTask.name,
       project: myTask.project.id,
       priority: myTask.priority,
+      duration: String(myTask.duration),
       startdate: dateObjectStartDate,
       starttime: dateObjectStartDate,
       start_date_time: myTask.start_date_time,
@@ -319,6 +332,7 @@ const EditTask: React.FC<TasksProps> = ({
         name: formData.name,
         project: formData.project,
         priority: formData.priority,
+        duration: String(formData.duration),
         startdate: formData.startdate,
         starttime: formData.starttime,
         start_date_time: formData.start_date_time,
@@ -579,6 +593,20 @@ const EditTask: React.FC<TasksProps> = ({
               <Select.Option value="Medium">Medium</Select.Option>
               <Select.Option value="High">High</Select.Option>
             </Select>
+          </Form.Item>
+          <Form.Item
+            name="duration"
+            label="Duration"
+            rules={[
+              {
+                required: true,
+                whitespace: true,
+                message: "Please input a task duration",
+              },
+            ]}
+            validateTrigger="onChange"
+          >
+            <Input name="duration" onChange={handleDurationInputChange} />
           </Form.Item>
           <Form.Item
             label="Start Date"

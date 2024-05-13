@@ -24,6 +24,7 @@ const Tasks: React.FC<TasksProps> = ({
       projectName: "Project 1",
       taskName: "Task 3",
       priority: "Low",
+      duration: 5,
       startdate: "1/3/12",
       starttime: "09:00",
       duedate: "2/2/22",
@@ -123,6 +124,7 @@ const Tasks: React.FC<TasksProps> = ({
               projectName: projectIdToNameMap.get(taskData[i].project_id),
               taskName: taskData[i].name,
               priority: taskData[i].priority,
+              duration: taskData[i].duration,
               startdate: formattedStartDate,
               starttime: startFormattedTime,
               duedate: formattedDueDate,
@@ -202,6 +204,11 @@ const Tasks: React.FC<TasksProps> = ({
       key: "priority",
       sorter: (a: { priority: string }, b: { priority: string }) =>
         (priorityMap.get(a.priority) || 0) - (priorityMap.get(b.priority) || 0),
+    },
+    {
+      title: "Duration (hours)",
+      dataIndex: "duration",
+      key: "duration",
     },
     {
       title: "Start Date",
