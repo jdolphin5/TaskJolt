@@ -80,3 +80,9 @@ model users {
   type                 String       @db.Text
   task_users           task_users[] @ignore
 }
+
+model task_dependencies {
+  parent_id Int   @db.SmallInt
+  child_id  Int   @db.SmallInt
+  @@id([parent_id, child_id]) // Define composite primary key
+}
