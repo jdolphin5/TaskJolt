@@ -5,6 +5,7 @@ import Tasks from "./Tasks";
 import AddTask from "./AddTask";
 import EditTask from "./EditTask";
 import Tags from "./Tags";
+import Dependencies from "./Dependencies";
 import { fetchProjectData, fetchTaskDataWithProjectData } from "../APIFunc";
 
 const ContentArea: React.FC = () => {
@@ -107,6 +108,7 @@ const ContentArea: React.FC = () => {
         }
       />
       <Route path="/tags" element={<Tags />} />
+      <Route path="/dependencies" element={<Dependencies />} />
     </Routes>
   );
 };
