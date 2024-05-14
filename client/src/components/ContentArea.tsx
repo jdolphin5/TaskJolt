@@ -108,7 +108,23 @@ const ContentArea: React.FC = () => {
         }
       />
       <Route path="/tags" element={<Tags />} />
-      <Route path="/dependencies" element={<Dependencies />} />
+      <Route
+        path="/dependencies"
+        element={
+          <Dependencies
+            tasksPageLoaded={tasksPageLoaded}
+            setTasksPageLoaded={setTasksPageLoaded}
+            projectsLoaded={projectsLoaded}
+            setProjectsLoaded={setProjectsLoaded}
+            tasksLoaded={tasksLoaded}
+            setTasksLoaded={setTasksLoaded}
+            projectData={projectData}
+            setProjectData={setProjectData}
+            taskData={taskData}
+            setTaskData={setTaskData}
+          />
+        }
+      />
     </Routes>
   );
 };

@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, Select, Table } from "antd";
+import { TasksProps } from "../Types";
+import { fetchProjectData } from "../APIFunc";
 
-const Dependencies = () => {
+const Dependencies: React.FC<TasksProps> = ({
+  tasksPageLoaded,
+  setTasksPageLoaded,
+  projectsLoaded,
+  setProjectsLoaded,
+  tasksLoaded,
+  setTasksLoaded,
+  projectData,
+  setProjectData,
+  taskData,
+  setTaskData,
+}) => {
   const handleSubmit = () => {};
 
   const [form] = Form.useForm();
@@ -59,6 +72,17 @@ const Dependencies = () => {
     console.log(formData);
   }, [formData]);
 
+  useEffect(() => {
+    fetchProjectData()
+      .then((projectData) => {
+        console.log("success");
+
+        setProjectData(projectData);
+      })
+      .catch((error) => {
+        console.error("Error fetching project data:", error);
+      });
+  }, []);
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
       <h1 style={{ textAlign: "center" }}>Dependencies</h1>
