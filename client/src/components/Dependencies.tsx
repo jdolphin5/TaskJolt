@@ -8,12 +8,12 @@ const Dependencies = () => {
 
   const [tableData, setTableData] = useState<any>([
     {
-      key: 3,
+      key: 1,
       childTask: "Test task 1",
       delete: <Button>Delete</Button>,
     },
     {
-      key: 4,
+      key: 2,
       childTask: "Test task 2",
       delete: <Button>Delete</Button>,
     },
@@ -23,11 +23,14 @@ const Dependencies = () => {
       delete: <Button>Delete</Button>,
     },
     {
-      key: 3,
+      key: 4,
       childTask: "Test task 4",
       delete: <Button>Delete</Button>,
     },
   ]);
+  const [projectSelected, setProjectSelected] = useState<boolean>(false);
+  const [parentTaskSelected, setParentTaskSelected] = useState<boolean>(false);
+  const [childTaskSelected, setChildTaskSelected] = useState<boolean>(false);
 
   const columns = [
     {
@@ -41,6 +44,21 @@ const Dependencies = () => {
       key: "delete",
     },
   ];
+
+  const [formData, setFormData] = useState<{
+    projectName?: string;
+    parentTaskName?: string;
+    childTaskName?: string;
+  }>({});
+
+  const handleSelectChange = (value: any, field: string) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
+
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
       <h1 style={{ textAlign: "center" }}>Dependencies</h1>
@@ -61,40 +79,51 @@ const Dependencies = () => {
           onFinish={handleSubmit}
           form={form}
         >
-          <Form.Item name="a" label="Project">
-            <Select>
-              <Select.Option>Project A</Select.Option>
-              <Select.Option>Project B</Select.Option>
-              <Select.Option>Project C</Select.Option>
+          <Form.Item name="projectName" label="Project">
+            <Select onChange={(evt) => handleSelectChange(evt, "projectName")}>
+              <Select.Option value="Project A">Project A</Select.Option>
+              <Select.Option value="Project B">Project B</Select.Option>
+              <Select.Option value="Project C">Project C</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item name="b" label="Parent Task">
-            <Select>
-              <Select.Option>Task A</Select.Option>
-              <Select.Option>Task B</Select.Option>
-              <Select.Option>Task C</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="c" label="Child Task">
-            <Select>
-              <Select.Option>Task D</Select.Option>
-              <Select.Option>Task E</Select.Option>
-              <Select.Option>Task F</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Button type="primary" htmlType="submit">
-            Add
-          </Button>
+          {formData.projectName && (
+            <Form.Item name="parentTaskName" label="Parent Task">
+              <Select
+                onChange={(evt) => handleSelectChange(evt, "parentTaskName")}
+              >
+                <Select.Option value="Task A">Task A</Select.Option>
+                <Select.Option value="Task B">Task B</Select.Option>
+                <Select.Option value="Task C">Task C</Select.Option>
+              </Select>
+            </Form.Item>
+          )}
+          {formData.parentTaskName && (
+            <Form.Item name="childTaskName" label="Child Task">
+              <Select
+                onChange={(evt) => handleSelectChange(evt, "childTaskName")}
+              >
+                <Select.Option value="Task D">Task D</Select.Option>
+                <Select.Option value="Task E">Task E</Select.Option>
+                <Select.Option value="Task F">Task F</Select.Option>
+              </Select>
+            </Form.Item>
+          )}
+          {formData.childTaskName && (
+            <Button type="primary" htmlType="submit">
+              Add
+            </Button>
+          )}
         </Form>
 
-        <div style={{ padding: "20px 0 20px 0px" }}>
-          <Table
-            dataSource={tableData}
-            columns={columns}
-            pagination={{ pageSize: 15 }}
-          />
-        </div>
+        {formData.childTaskName && (
+          <div style={{ padding: "20px 0 20px 0px" }}>
+            <Table
+              dataSource={tableData}
+              columns={columns}
+              pagination={{ pageSize: 15 }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
