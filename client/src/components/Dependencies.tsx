@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, Select, Table } from "antd";
 import { TasksProps } from "../Types";
-import { fetchProjectData } from "../APIFunc";
+import { fetchProjectData, fetchTaskDataWithProjectData } from "../APIFunc";
 
 const Dependencies: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -41,9 +41,6 @@ const Dependencies: React.FC<TasksProps> = ({
       delete: <Button>Delete</Button>,
     },
   ]);
-  const [projectSelected, setProjectSelected] = useState<boolean>(false);
-  const [parentTaskSelected, setParentTaskSelected] = useState<boolean>(false);
-  const [childTaskSelected, setChildTaskSelected] = useState<boolean>(false);
 
   const columns = [
     {
@@ -59,18 +56,24 @@ const Dependencies: React.FC<TasksProps> = ({
   ];
 
   const [formData, setFormData] = useState<{
-    projectName?: string;
-    parentTaskName?: string;
-    childTaskName?: string;
+    project?: number;
+    parentTask?: number;
+    childTask?: number;
   }>({});
+
+  const [filteredTaskData, setFilteredTaskData] = useState<any>();
 
   const handleSelectChange = (value: any, field: string) => {
     setFormData({ ...formData, [field]: value });
   };
 
   useEffect(() => {
-    console.log(formData);
+    console.log("formData :", formData);
   }, [formData]);
+
+  useEffect(() => {
+    console.log("projectData:", projectData);
+  }, [projectData]);
 
   useEffect(() => {
     fetchProjectData()
@@ -83,6 +86,22 @@ const Dependencies: React.FC<TasksProps> = ({
         console.error("Error fetching project data:", error);
       });
   }, []);
+
+  useEffect(() => {
+    fetchTaskDataWithProjectData(projectData).then((taskData: any) => {
+      console.log("success tasks loaded");
+      setTaskData(taskData);
+    });
+  }, [projectData]);
+
+  useEffect(() => {
+    if (formData.parentTask) {
+      setFilteredTaskData(
+        taskData.filter((task: any) => task.id !== formData.parentTask)
+      );
+    }
+  }, [formData.parentTask]);
+
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
       <h1 style={{ textAlign: "center" }}>Dependencies</h1>
@@ -103,51 +122,73 @@ const Dependencies: React.FC<TasksProps> = ({
           onFinish={handleSubmit}
           form={form}
         >
-          <Form.Item name="projectName" label="Project">
-            <Select onChange={(evt) => handleSelectChange(evt, "projectName")}>
-              <Select.Option value="Project A">Project A</Select.Option>
-              <Select.Option value="Project B">Project B</Select.Option>
-              <Select.Option value="Project C">Project C</Select.Option>
+          <Form.Item name="project" label="Project">
+            <Select onChange={(evt) => handleSelectChange(evt, "project")}>
+              {projectData ? (
+                projectData.map(
+                  ({ id, name }: { id: number; name: string }) => (
+                    <Select.Option key={id} value={id}>
+                      {name}
+                    </Select.Option>
+                  )
+                )
+              ) : (
+                <Select.Option disabled value={null}>
+                  No projects available
+                </Select.Option>
+              )}
             </Select>
           </Form.Item>
-          {formData.projectName && (
-            <Form.Item name="parentTaskName" label="Parent Task">
-              <Select
-                onChange={(evt) => handleSelectChange(evt, "parentTaskName")}
-              >
-                <Select.Option value="Task A">Task A</Select.Option>
-                <Select.Option value="Task B">Task B</Select.Option>
-                <Select.Option value="Task C">Task C</Select.Option>
+          {formData.project && (
+            <Form.Item name="parentTask" label="Parent Task">
+              <Select onChange={(evt) => handleSelectChange(evt, "parentTask")}>
+                {taskData ? (
+                  taskData.map(({ id, name }: { id: number; name: string }) => (
+                    <Select.Option key={id} value={id}>
+                      {name}
+                    </Select.Option>
+                  ))
+                ) : (
+                  <Select.Option disabled value={null}>
+                    No tasks available
+                  </Select.Option>
+                )}
               </Select>
             </Form.Item>
           )}
-          {formData.parentTaskName && (
-            <Form.Item name="childTaskName" label="Child Task">
-              <Select
-                onChange={(evt) => handleSelectChange(evt, "childTaskName")}
-              >
-                <Select.Option value="Task D">Task D</Select.Option>
-                <Select.Option value="Task E">Task E</Select.Option>
-                <Select.Option value="Task F">Task F</Select.Option>
-              </Select>
-            </Form.Item>
-          )}
-          {formData.childTaskName && (
-            <Button type="primary" htmlType="submit">
-              Add
-            </Button>
+          {formData.parentTask && (
+            <div style={{ padding: "20px 0 20px 0px" }}>
+              <Table
+                dataSource={tableData}
+                columns={columns}
+                pagination={{ pageSize: 15 }}
+              />
+
+              <Form.Item name="childTask" label="Child Task">
+                <Select
+                  onChange={(evt) => handleSelectChange(evt, "childTask")}
+                >
+                  {filteredTaskData ? (
+                    filteredTaskData.map(
+                      ({ id, name }: { id: number; name: string }) => (
+                        <Select.Option key={id} value={id}>
+                          {name}
+                        </Select.Option>
+                      )
+                    )
+                  ) : (
+                    <Select.Option disabled value={null}>
+                      No tasks available
+                    </Select.Option>
+                  )}
+                </Select>
+              </Form.Item>
+              <Button type="primary" htmlType="submit">
+                Add
+              </Button>
+            </div>
           )}
         </Form>
-
-        {formData.childTaskName && (
-          <div style={{ padding: "20px 0 20px 0px" }}>
-            <Table
-              dataSource={tableData}
-              columns={columns}
-              pagination={{ pageSize: 15 }}
-            />
-          </div>
-        )}
       </div>
     </div>
   );
