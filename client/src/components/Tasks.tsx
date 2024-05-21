@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tabs, Button } from "antd";
+import { Button, Form, Select, Tabs } from "antd";
 import type { TabsProps } from "antd";
 import { Link } from "react-router-dom";
 import { Task, TasksProps } from "../Types";
@@ -34,6 +34,8 @@ const Tasks: React.FC<TasksProps> = ({
       delete: <Button>Delete</Button>,
     },
   ]);
+
+  const [form] = Form.useForm();
 
   useEffect(() => {
     if (!tasksPageLoaded) {
@@ -298,6 +300,31 @@ const Tasks: React.FC<TasksProps> = ({
       <h1 style={{ margin: "0px 0px 10px 0px", textAlign: "center" }}>
         Task List
       </h1>
+      <div style={{ margin: "0px 0px 10px 0px" }}>
+        <Form
+          labelCol={{
+            span: 4,
+          }}
+          wrapperCol={{
+            span: 14,
+          }}
+          layout="horizontal"
+          style={{
+            maxWidth: 600,
+          }}
+          //onFinish={handleSubmit}
+          form={form}
+        >
+          <Form.Item name="tagFilterSelect" label="Filter by Tag">
+            <Select defaultValue="No filter">
+              <Select.Option key={1}>No filter</Select.Option>
+              <Select.Option key={2}>Tag A</Select.Option>
+              <Select.Option key={3}>Tag B</Select.Option>
+              <Select.Option key={4}>Tag C</Select.Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </div>
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
     </div>
   );
