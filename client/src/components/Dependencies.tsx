@@ -70,9 +70,14 @@ const Dependencies: React.FC<TasksProps> = ({
     useState<boolean>(false);
   const [taskDependencyData, setTaskDependencyData] = useState<any>([]);
   const [defaultValues, setDefaultValues] = useState<formInterface>({});
+  const [taskDataMap, setTaskDataMap] = useState<Map<number, string>>();
 
   const handleSelectChange = (value: any, field: string) => {
     setFormData({ ...formData, [field]: value });
+
+    if (field === "parentTask") {
+      setTaskDependenciesLoaded(false);
+    }
   };
 
   useEffect(() => {
@@ -121,21 +126,25 @@ const Dependencies: React.FC<TasksProps> = ({
     if (taskDependenciesLoaded) {
       //set the table data appropriately
       let newTableData: any = [];
-      taskDependencyData.forEach((element: any) => {
-        const row = {
-          key: element.child_id,
-          childTask: String(element.child_id),
-          delete: <Button>Delete</Button>,
-        };
-        newTableData.push(row);
-      });
+      if (taskDataMap) {
+        console.log("Task Data HashMap loaded");
+
+        taskDependencyData.forEach((element: any) => {
+          const row = {
+            key: element.child_id,
+            childTask: taskDataMap.get(element.child_id),
+            delete: <Button>Delete</Button>,
+          };
+          newTableData.push(row);
+        });
+      }
 
       console.log(newTableData);
       setTableData(newTableData);
 
       //add a filter to remove child tasks that are already children of the parent
     }
-  }, [formData.parentTask, taskDependenciesLoaded]);
+  }, [formData.parentTask, taskDependencyData]);
 
   useEffect(() => {}, [taskDependenciesLoaded]);
 
@@ -149,6 +158,14 @@ const Dependencies: React.FC<TasksProps> = ({
         setTaskDependencyData(dependencyData);
       }
     );
+
+    let myMap = new Map<number, string>();
+
+    for (let i = 0; i < taskData.length; i++) {
+      myMap.set(taskData[i].id, taskData[i].name);
+    }
+
+    setTaskDataMap(myMap);
   };
 
   const handleSubmit = async () => {
