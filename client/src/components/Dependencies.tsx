@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, Select, Table } from "antd";
 import { TasksProps } from "../Types";
-import { fetchProjectData, fetchTaskDataWithProjectData } from "../APIFunc";
+import {
+  fetchProjectData,
+  fetchTaskDataWithProjectId,
+  addTaskDependency,
+  fetchTaskDependenciesWithParentIdCallAPI,
+} from "../APIFunc";
 
 const Dependencies: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -15,8 +20,6 @@ const Dependencies: React.FC<TasksProps> = ({
   taskData,
   setTaskData,
 }) => {
-  const handleSubmit = () => {};
-
   const [form] = Form.useForm();
 
   const [tableData, setTableData] = useState<any>([
@@ -55,13 +58,18 @@ const Dependencies: React.FC<TasksProps> = ({
     },
   ];
 
-  const [formData, setFormData] = useState<{
+  interface formInterface {
     project?: number;
     parentTask?: number;
     childTask?: number;
-  }>({});
+  }
 
+  const [formData, setFormData] = useState<formInterface>({});
   const [filteredTaskData, setFilteredTaskData] = useState<any>();
+  const [taskDependenciesLoaded, setTaskDependenciesLoaded] =
+    useState<boolean>(false);
+  const [taskDependencyData, setTaskDependencyData] = useState<any>([]);
+  const [defaultValues, setDefaultValues] = useState<formInterface>({});
 
   const handleSelectChange = (value: any, field: string) => {
     setFormData({ ...formData, [field]: value });
@@ -88,19 +96,84 @@ const Dependencies: React.FC<TasksProps> = ({
   }, []);
 
   useEffect(() => {
-    fetchTaskDataWithProjectData(projectData).then((taskData: any) => {
-      console.log("success tasks loaded");
-      setTaskData(taskData);
-    });
-  }, [projectData]);
+    if (formData.project) {
+      fetchTaskDataWithProjectId(formData.project).then((taskData: any) => {
+        console.log("success tasks loaded");
+        setTaskData(taskData);
+      });
+    }
+  }, [formData.project]);
 
   useEffect(() => {
     if (formData.parentTask) {
       setFilteredTaskData(
         taskData.filter((task: any) => task.id !== formData.parentTask)
       );
+
+      //get the child tasks of the parent task from the db
+      if (!taskDependenciesLoaded) {
+        getTaskDependencies(formData.parentTask);
+
+        setTaskDependenciesLoaded(true);
+      }
     }
-  }, [formData.parentTask]);
+
+    if (taskDependenciesLoaded) {
+      //set the table data appropriately
+      let newTableData: any = [];
+      taskDependencyData.forEach((element: any) => {
+        const row = {
+          key: element.child_id,
+          childTask: String(element.child_id),
+          delete: <Button>Delete</Button>,
+        };
+        newTableData.push(row);
+      });
+
+      console.log(newTableData);
+      setTableData(newTableData);
+
+      //add a filter to remove child tasks that are already children of the parent
+    }
+  }, [formData.parentTask, taskDependenciesLoaded]);
+
+  useEffect(() => {}, [taskDependenciesLoaded]);
+
+  const getTaskDependencies = async (parentId: number) => {
+    fetchTaskDependenciesWithParentIdCallAPI(parentId).then(
+      (dependencyData: any) => {
+        console.log(
+          "success parent-child dependencies loaded for parentTask:",
+          parentId
+        );
+        setTaskDependencyData(dependencyData);
+      }
+    );
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await addTaskDependencyCallAPI();
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
+  const addTaskDependencyCallAPI = async () => {
+    try {
+      console.log("handleSubmit - ", formData);
+
+      await addTaskDependency(formData);
+
+      setTaskDependenciesLoaded(false);
+      setDefaultValues({
+        project: formData.project,
+        parentTask: formData.parentTask,
+      });
+    } catch (error) {
+      console.error("error calling API : ", error);
+    }
+  };
 
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
