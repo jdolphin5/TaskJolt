@@ -37,6 +37,20 @@ export async function fetchTaskDataWithProjectData(projectData: any) {
   }
 }
 
+export async function fetchTaskDataWithProjectId(projectId: number) {
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/api/tasks?projectIds=${projectId}`
+    );
+
+    console.log(response);
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data", error);
+  }
+}
+
 export async function fetchNotesData(taskId: number) {
   try {
     const response = await axios.get(
@@ -53,6 +67,21 @@ export async function fetchNotesData(taskId: number) {
 export async function fetchTagData() {
   try {
     const response = await axios.get("http://localhost:3000/api/tags");
+
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+export async function fetchTaskDependenciesWithParentIdCallAPI(
+  parentId: number
+) {
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/api/task_dependencies/${parentId}`
+    );
 
     console.log(response);
     return response.data;
@@ -139,6 +168,14 @@ export const addTag = async (formData: any) => {
 export const deleteTagByTagId = async (tagId: number) => {
   const response = await axios.delete(
     `http://localhost:3000/api/deletetag/${tagId}`
+  );
+  console.log("API Response:", response.data);
+};
+
+export const addTaskDependency = async (formData: any) => {
+  const response = await axios.post(
+    "http://localhost:3000/api/addtaskdependency",
+    formData
   );
   console.log("API Response:", response.data);
 };
