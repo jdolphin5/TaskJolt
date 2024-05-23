@@ -82,7 +82,8 @@ model users {
 }
 
 model task_dependencies {
-  parent_id Int   @db.SmallInt
-  child_id  Int   @db.SmallInt
+  project_id  Int   @db.SmallInt
+  parent_id   Int   @db.SmallInt
+  child_id    Int   @db.SmallInt
   @@id([parent_id, child_id]) // Define composite primary key
 }
