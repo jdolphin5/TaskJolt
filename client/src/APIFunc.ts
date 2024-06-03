@@ -179,3 +179,13 @@ export const addTaskDependency = async (formData: any) => {
   );
   console.log("API Response:", response.data);
 };
+
+export const deleteTaskDependencyByParentChild = async (
+  parentId: number,
+  childId: number
+) => {
+  const response = await axios.delete(
+    `http://localhost:3000/api/deletetaskdependency/${parentId}/${childId}`
+  );
+  console.log("API Response:", response.data);
+};
