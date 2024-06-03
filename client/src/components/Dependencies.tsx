@@ -5,6 +5,7 @@ import {
   fetchProjectData,
   fetchTaskDataWithProjectId,
   addTaskDependency,
+  deleteTaskDependencyByParentChild,
   fetchTaskDependenciesWithParentIdCallAPI,
 } from "../APIFunc";
 
@@ -133,7 +134,15 @@ const Dependencies: React.FC<TasksProps> = ({
           const row = {
             key: element.child_id,
             childTask: taskDataMap.get(element.child_id),
-            delete: <Button>Delete</Button>,
+            delete: (
+              <Button
+                onClick={(e) =>
+                  deleteTaskDependency(element.parent_id, element.child_id)
+                }
+              >
+                Delete
+              </Button>
+            ),
           };
           newTableData.push(row);
         });
@@ -144,9 +153,7 @@ const Dependencies: React.FC<TasksProps> = ({
 
       //add a filter to remove child tasks that are already children of the parent
     }
-  }, [formData.parentTask, taskDependencyData]);
-
-  useEffect(() => {}, [taskDependenciesLoaded]);
+  }, [formData.parentTask, taskDependencyData, taskDependenciesLoaded]);
 
   const getTaskDependencies = async (parentId: number) => {
     fetchTaskDependenciesWithParentIdCallAPI(parentId).then(
@@ -192,6 +199,27 @@ const Dependencies: React.FC<TasksProps> = ({
     }
   };
 
+  const deleteTaskDependency = async (parentId: number, childId: number) => {
+    console.log("delete button clicked", parentId, childId);
+
+    try {
+      await deleteTaskDependencyByParentChild(parentId, childId);
+
+      fetchTaskDependenciesWithParentIdCallAPI(parentId)
+        .then((dependencyData) => {
+          console.log("success");
+
+          setTaskDependencyData(dependencyData);
+          setTaskDependenciesLoaded(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching task dependency data:", error);
+        });
+    } catch (error) {
+      console.error("error calling API : ", error);
+    }
+  };
+
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
       <h1 style={{ textAlign: "center" }}>Dependencies</h1>
@@ -211,6 +239,7 @@ const Dependencies: React.FC<TasksProps> = ({
           }}
           onFinish={handleSubmit}
           form={form}
+          initialValues={defaultValues}
         >
           <Form.Item name="project" label="Project">
             <Select onChange={(evt) => handleSelectChange(evt, "project")}>
