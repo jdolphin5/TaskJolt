@@ -588,6 +588,40 @@ app.post("/api/addtaskdependency", async (req: any, res: any) => {
   }
 });
 
+app.delete(
+  "/api/deletetaskdependency/:parentId/:childId",
+  async (req: any, res: any) => {
+    const parentId = parseInt(req.params.parentId);
+    const childId = parseInt(req.params.childId);
+
+    try {
+      async function main() {
+        const deletedTaskDependency = await prisma.task_dependencies.delete({
+          where: {
+            parent_id_child_id: { parent_id: parentId, child_id: childId },
+          },
+        });
+        console.log("depdendency deleted:", deletedTaskDependency);
+        res
+          .status(200)
+          .json({ message: "Task Dependency deleted successfully!" });
+      }
+
+      main()
+        .then(async () => {
+          await prisma.$disconnect();
+        })
+        .catch(async (e: any) => {
+          console.error(e);
+          await prisma.$disconnect();
+          process.exit(1);
+        });
+    } catch (error) {
+      console.error("Error deleting note:", error);
+    }
+  }
+);
+
 // Serve static files from the 'dist' folder
 const distPath = path.resolve(__dirname, "../client/dist");
 app.use(express.static(distPath));
