@@ -112,6 +112,7 @@ const Dependencies: React.FC<TasksProps> = ({
 
   useEffect(() => {
     if (formData.parentTask) {
+      //filters the parent task out of the child task select drop down
       setFilteredTaskData(
         taskData.filter((task: any) => task.id !== formData.parentTask)
       );
@@ -130,6 +131,7 @@ const Dependencies: React.FC<TasksProps> = ({
       if (taskDataMap) {
         console.log("Task Data HashMap loaded");
 
+        //format the dependency data to fit the antd table data object
         taskDependencyData.forEach((element: any) => {
           const row = {
             key: element.child_id,
@@ -151,7 +153,14 @@ const Dependencies: React.FC<TasksProps> = ({
       console.log(newTableData);
       setTableData(newTableData);
 
-      //add a filter to remove child tasks that are already children of the parent
+      //filter to remove child tasks that are already children of the parent
+      const idsToExclude = taskDependencyData.map((task: any) => task.id);
+
+      setFilteredTaskData(
+        filteredTaskData.filter(
+          (task: any) => !idsToExclude.includes(task.childId)
+        )
+      );
     }
   }, [formData.parentTask, taskDependencyData, taskDependenciesLoaded]);
 
@@ -178,6 +187,9 @@ const Dependencies: React.FC<TasksProps> = ({
   const handleSubmit = async () => {
     try {
       await addTaskDependencyCallAPI();
+
+      //set child task select dropdown to null value
+      form.setFieldsValue({ childTask: null });
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -193,6 +205,7 @@ const Dependencies: React.FC<TasksProps> = ({
       setDefaultValues({
         project: formData.project,
         parentTask: formData.parentTask,
+        childTask: undefined,
       });
     } catch (error) {
       console.error("error calling API : ", error);
