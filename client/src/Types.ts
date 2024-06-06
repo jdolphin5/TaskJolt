@@ -23,6 +23,7 @@ export type Task = {
   key: number;
   projectName: string | undefined;
   taskName: string;
+  childTasks: string;
   priority: string;
   duration: number;
   startdate: string;
