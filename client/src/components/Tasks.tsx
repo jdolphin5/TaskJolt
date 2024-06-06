@@ -23,6 +23,7 @@ const Tasks: React.FC<TasksProps> = ({
       key: 3,
       projectName: "Project 1",
       taskName: "Task 3",
+      childTasks: "Task A, Task B, Task C",
       priority: "Low",
       duration: 5,
       startdate: "1/3/12",
@@ -125,6 +126,7 @@ const Tasks: React.FC<TasksProps> = ({
               key: taskData[i].id,
               projectName: projectIdToNameMap.get(taskData[i].project_id),
               taskName: taskData[i].name,
+              childTasks: "Task A, Task B, Task C",
               priority: taskData[i].priority,
               duration: taskData[i].duration,
               startdate: formattedStartDate,
@@ -199,6 +201,11 @@ const Tasks: React.FC<TasksProps> = ({
       render: (text: string, data: any, index: number) => (
         <Link to={`/EditTask/${data.key}`}>{data.taskName}</Link>
       ),
+    },
+    {
+      title: "Child Tasks",
+      dataIndex: "childTasks",
+      key: "childTasks",
     },
     {
       title: "Priority",
