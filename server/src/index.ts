@@ -523,6 +523,34 @@ app.delete("/api/deletetag/:id", async (req: any, res: any) => {
   }
 });
 
+//get all task_dependencies
+app.get("/api/task_dependencies", async (req: any, res: any) => {
+  try {
+    async function main() {
+      console.log("sent task_dependencies");
+
+      const data = await prisma.task_dependencies.findMany({});
+      console.log(data);
+      res.json(data);
+    }
+
+    main()
+      .then(async () => {
+        await prisma.$disconnect();
+      })
+      .catch(async (e: any) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//get task_dependencies (child) with parent id
 app.get("/api/task_dependencies/:id", async (req: any, res: any) => {
   try {
     async function main() {
