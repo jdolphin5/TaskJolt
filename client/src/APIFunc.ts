@@ -75,6 +75,19 @@ export async function fetchTagData() {
   }
 }
 
+export async function fetchDependenciesData() {
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/api/task_dependencies`
+    );
+
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
 export async function fetchTaskDependenciesWithParentIdCallAPI(
   parentId: number
 ) {
