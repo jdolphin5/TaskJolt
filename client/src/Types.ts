@@ -23,7 +23,7 @@ export type Task = {
   key: number;
   projectName: string | undefined;
   taskName: string;
-  childTasks: string;
+  childTasks: ReactElement[];
   priority: string;
   duration: number;
   startdate: string;
@@ -58,4 +58,10 @@ export interface Tag {
   id: number;
   name: string;
   delete?: ReactElement;
+}
+
+export interface Dependency {
+  project_id: number;
+  parent_id: number;
+  child_id: number;
 }
