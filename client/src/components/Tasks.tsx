@@ -2,9 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Button, Form, Select, Tabs } from "antd";
 import type { TabsProps } from "antd";
 import { Link } from "react-router-dom";
-import { Task, TasksProps } from "../Types";
+import { Task, TasksProps, Dependency } from "../Types";
 import TasksTable from "./TasksTable";
-import { deleteNotesByTaskId, deleteTaskByTaskId } from "../APIFunc";
+import {
+  fetchDependenciesData,
+  deleteNotesByTaskId,
+  deleteTaskByTaskId,
+} from "../APIFunc";
 
 const Tasks: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -18,12 +22,26 @@ const Tasks: React.FC<TasksProps> = ({
   taskData,
   setTaskData,
 }) => {
+  const testChildTaskIds = [1, 2, 3];
+
+  const [dependenciesLoaded, setDependenciesLoaded] = useState<boolean>(false);
+  const [dependenciesData, setDependenciesData] = useState<Dependency[] | null>(
+    null
+  );
+
   const [formattedTaskData, setFormattedTaskData] = useState<Task[] | null>([
     {
       key: 3,
       projectName: "Project 1",
       taskName: "Task 3",
-      childTasks: "Task A, Task B, Task C",
+      childTasks: testChildTaskIds.map((childId, index) => (
+        <React.Fragment key={childId}>
+          <Link to={`/task/${childId}`} key={childId} style={{}}>
+            Task {childId}
+          </Link>
+          {index < testChildTaskIds.length - 1 && " | "}
+        </React.Fragment>
+      )),
       priority: "Low",
       duration: 5,
       startdate: "1/3/12",
@@ -63,6 +81,33 @@ const Tasks: React.FC<TasksProps> = ({
       loadTasks();
     }
   }, [tasksPageLoaded]);
+
+  //need to reset dependenciesLoaded to false when tasks are reloaded
+  useEffect(() => {
+    if (!dependenciesLoaded) {
+      const loadDependencies = async () => {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          setDependenciesLoaded(true);
+        } catch (error) {
+          console.error("Error loading dependencies: ", error);
+        }
+      };
+
+      loadDependencies();
+
+      fetchDependenciesData()
+        .then((dependenciesData: Dependency[]) => {
+          console.log("success");
+
+          setDependenciesData(dependenciesData);
+          setDependenciesLoaded(true);
+        })
+        .catch((error: any) => {
+          console.error("Error fetching dependencies data:", error);
+        });
+    }
+  }, [dependenciesLoaded]);
 
   useEffect(() => {
     const formatTaskData = (taskData: any) => {
@@ -122,11 +167,26 @@ const Tasks: React.FC<TasksProps> = ({
             const dueFormattedTime = `${dueHour}:${dueMinute} ${dueMeridiem}`;
             const isRecurring = taskData[i].recurring === 0 ? "no" : "yes";
 
+            //get the childIds of taskDependencies with parentId
+            const taskDependencies = (dependenciesData || [])
+              .filter((dependency) => dependency.parent_id === taskData[i].id)
+              .map((dependency) => dependency.child_id);
+
             const singleTask: Task = {
               key: taskData[i].id,
               projectName: projectIdToNameMap.get(taskData[i].project_id),
               taskName: taskData[i].name,
-              childTasks: "Task A, Task B, Task C",
+              //filter below gets the name of the child task with given id from taskData
+              childTasks: taskDependencies.map((childId, index) => (
+                <React.Fragment key={childId}>
+                  <Link to={`/EditTask/${childId}`} key={childId} style={{}}>
+                    {taskData
+                      .filter((task: any) => task.id === childId)
+                      .map((task: any) => task.name)}
+                  </Link>
+                  {index < taskDependencies.length - 1 && " | "}
+                </React.Fragment>
+              )),
               priority: taskData[i].priority,
               duration: taskData[i].duration,
               startdate: formattedStartDate,
@@ -155,7 +215,7 @@ const Tasks: React.FC<TasksProps> = ({
     };
 
     formatTaskData(taskData);
-  }, [tasksLoaded]);
+  }, [tasksLoaded, dependenciesLoaded]);
 
   const deleteTask = async (taskId: number) => {
     console.log("delete button clicked", taskId);
@@ -175,11 +235,16 @@ const Tasks: React.FC<TasksProps> = ({
         setTasksPageLoaded(false);
         setProjectsLoaded(false);
         setTasksLoaded(false);
+        setDependenciesLoaded(false);
       } catch (error) {
         console.error("error calling API : ", error);
       }
     }
   };
+
+  //API call to load the task_dependencies table
+
+  //Merge the task_dependencies table into the
 
   const priorityMap = new Map<string, number>([
     ["Low", 0],
