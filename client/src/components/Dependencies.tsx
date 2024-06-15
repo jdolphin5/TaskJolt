@@ -158,9 +158,7 @@ const Dependencies: React.FC<TasksProps> = ({
       const idsToExclude = taskDependencyData.map((task: any) => task.child_id);
 
       setFilteredTaskData(
-        filteredTaskData.filter(
-          (task: any) => !idsToExclude.includes(task.id)
-        )
+        filteredTaskData.filter((task: any) => !idsToExclude.includes(task.id))
       );
     }
   }, [formData.parentTask, taskDependencyData, taskDependenciesLoaded]);
@@ -275,11 +273,13 @@ const Dependencies: React.FC<TasksProps> = ({
             <Form.Item name="parentTask" label="Parent Task">
               <Select onChange={(evt) => handleSelectChange(evt, "parentTask")}>
                 {singleTaskData ? (
-                  singleTaskData.map(({ id, name }: { id: number; name: string }) => (
-                    <Select.Option key={id} value={id}>
-                      {name}
-                    </Select.Option>
-                  ))
+                  singleTaskData.map(
+                    ({ id, name }: { id: number; name: string }) => (
+                      <Select.Option key={id} value={id}>
+                        {name}
+                      </Select.Option>
+                    )
+                  )
                 ) : (
                   <Select.Option disabled value={null}>
                     No tasks available
