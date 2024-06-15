@@ -150,9 +150,18 @@ const EditTask: React.FC<TasksProps> = ({
         console.log("priority not entered");
         ready = false;
       }
-      if (formData.duration == null || typeof formData.duration !== "number") {
-        console.log("duration not entered or is not a number");
+      if (formData.duration == null) {
+        console.log("duration not entered");
         ready = false;
+      } else if (typeof formData.duration !== "number") {
+        const num = Number(formData.duration);
+
+        if (isNaN(num)) {
+          console.log("duration is not a number");
+          ready = false;
+        } else {
+          formData.duration = num;
+        }
       }
       if (formData.startdate === null) {
         console.log("start date not entered");
