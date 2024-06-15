@@ -154,11 +154,11 @@ const Dependencies: React.FC<TasksProps> = ({
       setTableData(newTableData);
 
       //filter to remove child tasks that are already children of the parent
-      const idsToExclude = taskDependencyData.map((task: any) => task.id);
+      const idsToExclude = taskDependencyData.map((task: any) => task.child_id);
 
       setFilteredTaskData(
         filteredTaskData.filter(
-          (task: any) => !idsToExclude.includes(task.childId)
+          (task: any) => !idsToExclude.includes(task.id)
         )
       );
     }
@@ -205,7 +205,6 @@ const Dependencies: React.FC<TasksProps> = ({
       setDefaultValues({
         project: formData.project,
         parentTask: formData.parentTask,
-        childTask: undefined,
       });
     } catch (error) {
       console.error("error calling API : ", error);
