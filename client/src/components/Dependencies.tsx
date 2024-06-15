@@ -72,6 +72,7 @@ const Dependencies: React.FC<TasksProps> = ({
   const [taskDependencyData, setTaskDependencyData] = useState<any>([]);
   const [defaultValues, setDefaultValues] = useState<formInterface>({});
   const [taskDataMap, setTaskDataMap] = useState<Map<number, string>>();
+  const [singleTaskData, setSingleTaskData] = useState<any>();
 
   const handleSelectChange = (value: any, field: string) => {
     setFormData({ ...formData, [field]: value });
@@ -105,7 +106,7 @@ const Dependencies: React.FC<TasksProps> = ({
     if (formData.project) {
       fetchTaskDataWithProjectId(formData.project).then((taskData: any) => {
         console.log("success tasks loaded");
-        setTaskData(taskData);
+        setSingleTaskData(taskData);
       });
     }
   }, [formData.project]);
@@ -114,7 +115,7 @@ const Dependencies: React.FC<TasksProps> = ({
     if (formData.parentTask) {
       //filters the parent task out of the child task select drop down
       setFilteredTaskData(
-        taskData.filter((task: any) => task.id !== formData.parentTask)
+        singleTaskData.filter((task: any) => task.id !== formData.parentTask)
       );
 
       //get the child tasks of the parent task from the db
@@ -177,8 +178,8 @@ const Dependencies: React.FC<TasksProps> = ({
 
     let myMap = new Map<number, string>();
 
-    for (let i = 0; i < taskData.length; i++) {
-      myMap.set(taskData[i].id, taskData[i].name);
+    for (let i = 0; i < singleTaskData.length; i++) {
+      myMap.set(singleTaskData[i].id, singleTaskData[i].name);
     }
 
     setTaskDataMap(myMap);
@@ -273,8 +274,8 @@ const Dependencies: React.FC<TasksProps> = ({
           {formData.project && (
             <Form.Item name="parentTask" label="Parent Task">
               <Select onChange={(evt) => handleSelectChange(evt, "parentTask")}>
-                {taskData ? (
-                  taskData.map(({ id, name }: { id: number; name: string }) => (
+                {singleTaskData ? (
+                  singleTaskData.map(({ id, name }: { id: number; name: string }) => (
                     <Select.Option key={id} value={id}>
                       {name}
                     </Select.Option>
