@@ -324,6 +324,16 @@ app.delete("/api/deletetasks/:id", async (req: any, res: any) => {
   }
 });
 
+app.get("/api/tasksAndDependencies", async (req: any, res: any) => {
+  try {
+    const tasks = await prisma.task.findMany();
+    const dependencies = await prisma.task_dependencies.findMany();
+    res.json({ tasks, dependencies });
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching tasks and dependencies" });
+  }
+});
+
 app.get("/api/notes/:id", async (req: any, res: any) => {
   try {
     async function main() {
