@@ -66,13 +66,15 @@ const Dependencies: React.FC<TasksProps> = ({
   }
 
   const [formData, setFormData] = useState<formInterface>({});
-  const [filteredTaskData, setFilteredTaskData] = useState<any>();
+  const [filteredTaskData, setFilteredTaskData] = useState<any>([]);
   const [taskDependenciesLoaded, setTaskDependenciesLoaded] =
     useState<boolean>(false);
   const [taskDependencyData, setTaskDependencyData] = useState<any>([]);
   const [defaultValues, setDefaultValues] = useState<formInterface>({});
   const [taskDataMap, setTaskDataMap] = useState<Map<number, string>>();
   const [singleTaskData, setSingleTaskData] = useState<any>();
+  const [filteredTaskDataLoaded, setFilteredTaskDataLoaded] =
+    useState<boolean>(false);
 
   const handleSelectChange = (value: any, field: string) => {
     setFormData({ ...formData, [field]: value });
@@ -113,55 +115,69 @@ const Dependencies: React.FC<TasksProps> = ({
 
   useEffect(() => {
     if (formData.parentTask) {
-      //filters the parent task out of the child task select drop down
+      // Filters the parent task out of the child task select drop down
+
       setFilteredTaskData(
         singleTaskData.filter((task: any) => task.id !== formData.parentTask)
       );
+      setFilteredTaskDataLoaded(true);
+    }
+  }, [formData.parentTask]);
 
-      //get the child tasks of the parent task from the db
-      if (!taskDependenciesLoaded) {
-        getTaskDependencies(formData.parentTask);
-
+  useEffect(() => {
+    const fetchDependenciesAndUpdateState = async () => {
+      if (filteredTaskDataLoaded && formData.parentTask) {
+        // Get the child tasks of the parent task from the DB
+        await getTaskDependencies(formData.parentTask);
         setTaskDependenciesLoaded(true);
+        setFilteredTaskDataLoaded(false);
       }
+    };
+    fetchDependenciesAndUpdateState()
+      .then(() => {
+        console.log("Dependency data fetched and state updated.");
+      })
+      .catch((error) => {
+        console.error("Error fetching dependencies:", error);
+      });
+  }, [filteredTaskDataLoaded]);
+
+  useEffect(() => {
+    console.log("filtered Task Data:", filteredTaskData);
+    // Set the table data appropriately
+    let newTableData: any = [];
+    if (taskDataMap) {
+      console.log("Task Data HashMap loaded");
+
+      // Format the dependency data to fit the antd table data object
+      taskDependencyData.forEach((element: any) => {
+        const row = {
+          key: element.child_id,
+          childTask: taskDataMap.get(element.child_id),
+          delete: (
+            <Button
+              onClick={() =>
+                deleteTaskDependency(element.parent_id, element.child_id)
+              }
+            >
+              Delete
+            </Button>
+          ),
+        };
+        newTableData.push(row);
+      });
     }
 
-    if (taskDependenciesLoaded) {
-      //set the table data appropriately
-      let newTableData: any = [];
-      if (taskDataMap) {
-        console.log("Task Data HashMap loaded");
+    console.log(newTableData);
+    setTableData(newTableData);
 
-        //format the dependency data to fit the antd table data object
-        taskDependencyData.forEach((element: any) => {
-          const row = {
-            key: element.child_id,
-            childTask: taskDataMap.get(element.child_id),
-            delete: (
-              <Button
-                onClick={(e) =>
-                  deleteTaskDependency(element.parent_id, element.child_id)
-                }
-              >
-                Delete
-              </Button>
-            ),
-          };
-          newTableData.push(row);
-        });
-      }
+    // Filter to remove child tasks that are already children of the parent
+    const idsToExclude = taskDependencyData.map((task: any) => task.child_id);
 
-      console.log(newTableData);
-      setTableData(newTableData);
-
-      //filter to remove child tasks that are already children of the parent
-      const idsToExclude = taskDependencyData.map((task: any) => task.child_id);
-
-      setFilteredTaskData(
-        filteredTaskData.filter((task: any) => !idsToExclude.includes(task.id))
-      );
-    }
-  }, [formData.parentTask, taskDependencyData, taskDependenciesLoaded]);
+    setFilteredTaskData(
+      filteredTaskData.filter((task: any) => !idsToExclude.includes(task.id))
+    );
+  }, [taskDependencyData]);
 
   const getTaskDependencies = async (parentId: number) => {
     fetchTaskDependenciesWithParentIdCallAPI(parentId).then(
