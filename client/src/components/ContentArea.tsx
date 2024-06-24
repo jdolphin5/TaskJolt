@@ -6,6 +6,7 @@ import AddTask from "./AddTask";
 import EditTask from "./EditTask";
 import Tags from "./Tags";
 import Dependencies from "./Dependencies";
+import CriticalPath from "./CriticalPath";
 import { fetchProjectData, fetchTaskDataWithProjectData } from "../APIFunc";
 
 const ContentArea: React.FC = () => {
@@ -125,6 +126,7 @@ const ContentArea: React.FC = () => {
           />
         }
       />
+      <Route path="/criticalpath" element={<CriticalPath />} />
     </Routes>
   );
 };
