@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-
-const fetchTasksAndDependencies = async () => {
-  const response = await axios.get(
-    "http://localhost:3000/api/tasksAndDependencies"
-  );
-  return response.data;
-};
+import { Form, Select } from "antd";
+import { TasksProps } from "../Types";
+import { fetchTasksAndDependencies } from "../APIFunc";
 
 const calculateCPM = (tasks: any, dependencies: any) => {
   // Initialize task details
@@ -70,49 +65,160 @@ const calculateCPM = (tasks: any, dependencies: any) => {
   return { taskDetails, criticalTasks };
 };
 
-const CriticalPath = () => {
+const CriticalPath: React.FC<TasksProps> = ({
+  tasksPageLoaded,
+  setTasksPageLoaded,
+  projectsLoaded,
+  setProjectsLoaded,
+  tasksLoaded,
+  setTasksLoaded,
+  projectData,
+  setProjectData,
+  taskData,
+  setTaskData,
+}) => {
+  const [form] = Form.useForm();
+
   const [tasks, setTasks] = useState([]);
   const [dependencies, setDependencies] = useState([]);
   const [taskDetails, setTaskDetails] = useState([]);
   const [criticalTasks, setCriticalTasks] = useState([]);
 
+  interface formInterface {
+    project?: number;
+  }
+
+  const [formData, setFormData] = useState<formInterface>({});
+
+  const handleSelectChange = (value: any, field: string) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      const { tasks, dependencies } = await fetchTasksAndDependencies();
-      setTasks(tasks);
-      setDependencies(dependencies);
+    if (!tasksPageLoaded) {
+      const loadProjects = async () => {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          setTasksPageLoaded(true);
+        } catch (error) {
+          console.error("Error loading projects: ", error);
+        }
+      };
 
-      const { taskDetails, criticalTasks } = calculateCPM(tasks, dependencies);
-      setTaskDetails(taskDetails);
-      setCriticalTasks(criticalTasks);
-    };
+      const loadTasks = async () => {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        } catch (error) {
+          console.error("Error loading tasks:", error);
+        }
+      };
 
-    fetchData();
-  }, []);
+      console.log("initialising useEffect to load projects and tasks");
+
+      loadProjects();
+      loadTasks();
+    }
+  }, [tasksPageLoaded]);
+
+  useEffect(() => {
+    if (formData.project) {
+      const fetchData = async (projectId: number) => {
+        const { tasks, dependencies } = await fetchTasksAndDependencies(
+          projectId
+        );
+        setTasks(tasks);
+        setDependencies(dependencies);
+
+        const { taskDetails, criticalTasks } = calculateCPM(
+          tasks,
+          dependencies
+        );
+        setTaskDetails(taskDetails);
+        setCriticalTasks(criticalTasks);
+      };
+
+      fetchData(formData.project);
+    }
+  }, [formData.project]);
 
   return (
-    <div>
-      <h1>Critical Path Method</h1>
-      <h2>Tasks</h2>
-      <ul>
-        {taskDetails.map((task: any) => (
-          <li key={task.id}>
-            Task {task.id} - {task.name}: {<br />}Early Start: {task.earlyStart}
-            , Late Start: {task.lateStart}, Early Finish: {task.earlyFinish},
-            Late Finish: {task.lateFinish}
-          </li>
-        ))}
-      </ul>
-      <h2>Critical Tasks</h2>
-      <ul>
-        {criticalTasks.map((task: any) => (
-          <li key={task.id}>
-            Task {task.id} - {task.name}: {<br />}Early Start: {task.earlyStart}
-            , Late Start: {task.lateStart}, Early Finish: {task.earlyFinish},
-            Late Finish: {task.lateFinish}
-          </li>
-        ))}
-      </ul>
+    <div style={{ padding: "0px 15px 0px 15px" }}>
+      <h1 style={{ textAlign: "center" }}>Critical Path</h1>
+      <div style={{ padding: "0px 0px 5px 0px" }}>
+        <p>Select a project to calculate the critical path</p>
+
+        <Form
+          labelCol={{
+            span: 4,
+          }}
+          wrapperCol={{
+            span: 14,
+          }}
+          layout="horizontal"
+          style={{
+            maxWidth: 600,
+          }}
+          //onFinish={handleSubmit}
+          form={form}
+          //initialValues={}
+        >
+          <Form.Item name="project" label="Project">
+            <Select onChange={(evt) => handleSelectChange(evt, "project")}>
+              {projectData ? (
+                projectData.map(
+                  ({ id, name }: { id: number; name: string }) => (
+                    <Select.Option key={id} value={id}>
+                      {name}
+                    </Select.Option>
+                  )
+                )
+              ) : (
+                <Select.Option disabled value={null}>
+                  No projects available
+                </Select.Option>
+              )}
+            </Select>
+          </Form.Item>
+          {formData.project && (
+            <div>
+              {taskDetails.length > 0 && (
+                <div>
+                  <h2>Tasks</h2>
+                  <ul>
+                    {taskDetails.map((task: any) => (
+                      <li key={task.id}>
+                        Task {task.id} - {task.name}: {<br />}Early Start:{" "}
+                        {task.earlyStart}, Late Start: {task.lateStart}, Early
+                        Finish: {task.earlyFinish}, Late Finish:{" "}
+                        {task.lateFinish}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {taskDetails.length == 0 && <div>This project has no tasks.</div>}
+              {criticalTasks.length > 0 && (
+                <div>
+                  <h2>Critical Tasks</h2>
+                  <ul>
+                    {criticalTasks.map((task: any) => (
+                      <li key={task.id}>
+                        Task {task.id} - {task.name}: {<br />}Early Start:{" "}
+                        {task.earlyStart}, Late Start: {task.lateStart}, Early
+                        Finish: {task.earlyFinish}, Late Finish:{" "}
+                        {task.lateFinish}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {taskDetails.length > 0 && criticalTasks.length == 0 && (
+                <div>This project has no critical tasks.</div>
+              )}
+            </div>
+          )}
+        </Form>
+      </div>
     </div>
   );
 };
