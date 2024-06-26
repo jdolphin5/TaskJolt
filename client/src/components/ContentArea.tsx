@@ -126,7 +126,23 @@ const ContentArea: React.FC = () => {
           />
         }
       />
-      <Route path="/criticalpath" element={<CriticalPath />} />
+      <Route
+        path="/criticalpath"
+        element={
+          <CriticalPath
+            tasksPageLoaded={tasksPageLoaded}
+            setTasksPageLoaded={setTasksPageLoaded}
+            projectsLoaded={projectsLoaded}
+            setProjectsLoaded={setProjectsLoaded}
+            tasksLoaded={tasksLoaded}
+            setTasksLoaded={setTasksLoaded}
+            projectData={projectData}
+            setProjectData={setProjectData}
+            taskData={taskData}
+            setTaskData={setTaskData}
+          />
+        }
+      />
     </Routes>
   );
 };
