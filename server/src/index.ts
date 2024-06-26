@@ -324,10 +324,19 @@ app.delete("/api/deletetasks/:id", async (req: any, res: any) => {
   }
 });
 
-app.get("/api/tasksAndDependencies", async (req: any, res: any) => {
+app.get("/api/tasksAndDependencies/:id", async (req: any, res: any) => {
+  const projectId = parseInt(req.params.id);
   try {
-    const tasks = await prisma.task.findMany();
-    const dependencies = await prisma.task_dependencies.findMany();
+    const tasks = await prisma.task.findMany({
+      where: {
+        project_id: projectId,
+      },
+    });
+    const dependencies = await prisma.task_dependencies.findMany({
+      where: {
+        project_id: projectId,
+      },
+    });
     res.json({ tasks, dependencies });
   } catch (error) {
     res.status(500).json({ error: "Error fetching tasks and dependencies" });
