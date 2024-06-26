@@ -103,6 +103,17 @@ export async function fetchTaskDependenciesWithParentIdCallAPI(
   }
 }
 
+export const fetchTasksAndDependencies = async (projectId: number) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/api/tasksAndDependencies/${projectId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
 export const addProject = async (formData: any) => {
   const response = await axios.post(
     "http://localhost:3000/api/addproject",
