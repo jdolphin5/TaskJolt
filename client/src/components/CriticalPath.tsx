@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Select } from "antd";
 import { TasksProps } from "../Types";
 import { fetchTasksAndDependencies } from "../APIFunc";
+import NetworkDiagram from "./NetworkDiagram";
 
 const calculateCPM = (tasks: any, dependencies: any) => {
   // Initialize task details
@@ -144,7 +145,21 @@ const CriticalPath: React.FC<TasksProps> = ({
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
       <h1 style={{ textAlign: "center" }}>Critical Path</h1>
+      <h2>Network Diagram</h2>
+
+      <div
+        style={{
+          height: "500px",
+          width: "100%",
+          margin: "5px 0px 10px 0px",
+          border: "1px solid black",
+        }}
+      >
+        <NetworkDiagram />
+      </div>
+
       <div style={{ padding: "0px 0px 5px 0px" }}>
+        <h3>Critical Path Method (CPM)</h3>
         <p>Select a project to calculate the critical path: </p>
 
         <Form
@@ -224,7 +239,6 @@ const CriticalPath: React.FC<TasksProps> = ({
             </div>
           )}
         </Form>
-        <h3>Critical Path Method (CPM)</h3>
         <p>
           The Critical Path Method (CPM) is a project management technique used
           to identify the sequence of crucial steps, or "tasks," that determine
