@@ -10,6 +10,7 @@
   "author": "James Dolphin",
   "license": "ISC",
   "dependencies": {
+    "@projectstorm/react-diagrams": "^7.0.4",
     "@types/react-dom": "^18.2.23",
     "@types/react-router-dom": "^5.3.3",
     "antd": "^5.16.0",
