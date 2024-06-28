@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
 import createEngine, {
   DiagramModel,
-  DefaultNodeModel,
   DefaultLinkModel,
-  DefaultLabelModel,
-  DiagramEngine,
 } from "@projectstorm/react-diagrams";
 import { BodyWidget } from "./BodyWidget";
 import { TSCustomNodeModel } from "./custom-node-ts/TSCustomNodeModel";
