@@ -7,25 +7,24 @@ export interface TSCustomNodeWidgetProps {
   engine: DiagramEngine;
 }
 
-export interface TSCustomNodeWidgetState {}
+export interface TSCustomNodeWidgetState {
+  node: TSCustomNodeModel;
+  engine: any;
+}
 
-export class TSCustomNodeWidget extends React.Component<
-  TSCustomNodeWidgetProps,
-  TSCustomNodeWidgetState
-> {
-  constructor(props: TSCustomNodeWidgetProps) {
-    super(props);
-    this.state = {};
-  }
-
-  render() {
-    return (
-      <div className="custom-node">
+export const TSCustomNodeWidget: React.FC<TSCustomNodeWidgetProps> = ({
+  node,
+  engine,
+}) => {
+  return (
+    <div className="custom-node" style={{ backgroundColor: node.color }}>
+      <div className="custom-node-header">
+        {node.name}
         {(() => {
-          const p = this.props.node.getPort("in");
+          const p = node.getPort("in");
           if (p) {
             return (
-              <PortWidget engine={this.props.engine} port={p}>
+              <PortWidget engine={engine} port={p}>
                 <div className="circle-port" />
               </PortWidget>
             );
@@ -33,10 +32,10 @@ export class TSCustomNodeWidget extends React.Component<
           return null; // or any fallback content if needed
         })()}
         {(() => {
-          const p = this.props.node.getPort("out");
+          const p = node.getPort("out");
           if (p) {
             return (
-              <PortWidget engine={this.props.engine} port={p}>
+              <PortWidget engine={engine} port={p}>
                 <div className="circle-port" />
               </PortWidget>
             );
@@ -45,9 +44,9 @@ export class TSCustomNodeWidget extends React.Component<
         })()}
         <div
           className="custom-node-color"
-          style={{ backgroundColor: this.props.node.color }}
+          style={{ backgroundColor: node.color }}
         />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};

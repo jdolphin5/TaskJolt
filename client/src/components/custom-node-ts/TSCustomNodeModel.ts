@@ -1,24 +1,22 @@
-import {
-  BaseModelOptions,
-  DefaultPortModel,
-  NodeModel,
-} from "@projectstorm/react-diagrams";
+import { NodeModel, NodeModelGenerics } from "@projectstorm/react-diagrams";
+import { DefaultPortModel } from "@projectstorm/react-diagrams";
 
-export interface TSCustomNodeModelOptions extends BaseModelOptions {
+interface TSCustomNodeModelOptions extends NodeModelGenerics {
   color?: string;
+  name?: string;
 }
 
-export class TSCustomNodeModel extends NodeModel {
+export class TSCustomNodeModel extends NodeModel<TSCustomNodeModelOptions> {
   color: string;
+  name: string;
 
-  constructor(options: TSCustomNodeModelOptions = {}) {
+  constructor(options: any = {}) {
     super({
       ...options,
       type: "ts-custom-node",
     });
     this.color = options.color || "red";
-
-    // setup an in and out port
+    this.name = options.name || "Unnamed Node";
     this.addPort(
       new DefaultPortModel({
         in: true,
@@ -37,11 +35,13 @@ export class TSCustomNodeModel extends NodeModel {
     return {
       ...super.serialize(),
       color: this.color,
+      name: this.name,
     };
   }
 
   deserialize(event: any): void {
     super.deserialize(event);
     this.color = event.data.color;
+    this.name = event.data.name;
   }
 }
