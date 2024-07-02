@@ -84,6 +84,7 @@ const CriticalPath: React.FC<TasksProps> = ({
   const [dependencies, setDependencies] = useState([]);
   const [taskDetails, setTaskDetails] = useState([]);
   const [criticalTasks, setCriticalTasks] = useState([]);
+  const [projectId, setProjectId] = useState<number>(-1);
 
   interface formInterface {
     project?: number;
@@ -139,25 +140,13 @@ const CriticalPath: React.FC<TasksProps> = ({
       };
 
       fetchData(formData.project);
+      setProjectId(formData.project);
     }
   }, [formData.project]);
 
   return (
     <div style={{ padding: "0px 15px 0px 15px" }}>
       <h1 style={{ textAlign: "center" }}>Critical Path</h1>
-      <h2>Network Diagram</h2>
-
-      <div
-        style={{
-          height: "500px",
-          width: "100%",
-          margin: "5px 0px 10px 0px",
-          border: "1px solid black",
-        }}
-      >
-        <NetworkDiagram />
-      </div>
-
       <div style={{ padding: "0px 0px 5px 0px" }}>
         <h3>Critical Path Method (CPM)</h3>
         <p>Select a project to calculate the critical path: </p>
@@ -194,6 +183,35 @@ const CriticalPath: React.FC<TasksProps> = ({
               )}
             </Select>
           </Form.Item>
+          {formData.project && projectId !== -1 && (
+            <div>
+              <h2>Network Diagram</h2>
+
+              <div
+                style={{
+                  height: "500px",
+                  width: "100%",
+                  margin: "5px 0px 10px 0px",
+                  border: "1px solid black",
+                }}
+              >
+                <NetworkDiagram
+                  tasksPageLoaded={tasksPageLoaded}
+                  setTasksPageLoaded={setTasksPageLoaded}
+                  projectsLoaded={projectsLoaded}
+                  setProjectsLoaded={setProjectsLoaded}
+                  tasksLoaded={tasksLoaded}
+                  setTasksLoaded={setTasksLoaded}
+                  projectData={projectData}
+                  setProjectData={setProjectData}
+                  taskData={taskData}
+                  setTaskData={setTaskData}
+                  projectId={projectId}
+                  setProjectId={setProjectId}
+                />
+              </div>
+            </div>
+          )}
           {formData.project && (
             <div>
               {taskDetails.length > 0 && (
