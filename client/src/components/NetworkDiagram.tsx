@@ -40,16 +40,52 @@ const NetworkDiagram: React.FC<NetworkDiagramProps> = ({
       // Create a new DiagramModel
       const newModel = new DiagramModel();
 
-      // Map to store node models
+      // Create a map to store node models
       const nodeMap = new Map();
 
-      // Create nodes
+      // Create a map to store children of each task
+      const childrenMap = new Map();
       tasks.forEach((task: any) => {
-        const node = new TSCustomNodeModel({ color: "rgb(192,255,0)" }); // Customize the color based on task properties
-        node.setPosition(Math.random() * 400, Math.random() * 400); // Random positioning for now, you can set your own logic
-        node.name = task.name;
+        childrenMap.set(task.id, []);
+      });
+      dependencies.forEach((dependency: any) => {
+        if (!childrenMap.has(dependency.parent_id)) {
+          childrenMap.set(dependency.parent_id, []);
+        }
+        childrenMap.get(dependency.parent_id).push(dependency.child_id);
+      });
+
+      // Recursive function to position nodes
+      const positionNodes = (taskId: any, x: number, y: number) => {
+        const node = nodeMap.get(taskId);
+        node.setPosition(x, y);
+
+        const children = childrenMap.get(taskId);
+        children.forEach((childId: any, index: number) => {
+          positionNodes(childId, x + index * 150, y + 150);
+        });
+      };
+
+      // Create nodes and add them to the model
+      tasks.forEach((task: any) => {
+        const node = new TSCustomNodeModel({
+          name: task.name,
+          color: "rgb(192,255,0)",
+        });
         nodeMap.set(task.id, node);
         newModel.addNode(node);
+      });
+
+      // Position the root nodes (tasks without parents)
+      const rootNodes = tasks.filter(
+        (task: any) =>
+          !dependencies.some(
+            (dependency: any) => dependency.child_id === task.id
+          )
+      );
+
+      rootNodes.forEach((rootNode: any, index: number) => {
+        positionNodes(rootNode.id, index * 150, 50);
       });
 
       // Create links
