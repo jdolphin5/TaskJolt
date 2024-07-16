@@ -13,7 +13,7 @@ TaskJolt is a full-stack interactive Task Management web app.
 - Critical Path Method (CPM) algorithm for optimised scheduling
 - Generate network diagrams for project visualisation
 
-# Setup instructions:
+# Setup Instructions
 - Download and open the repo in VSCode
 - Install Node 10.8.1
 - Install mySQL
