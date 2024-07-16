@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input, Form } from "antd";
+import {
+  hasGrantedAllScopesGoogle,
+  GoogleOAuthProvider,
+  GoogleLogin,
+} from "@react-oauth/google";
 
 const Login: React.FC = () => {
   const [form] = Form.useForm();
@@ -73,6 +78,18 @@ const Login: React.FC = () => {
           <Button type="primary">Sign Up</Button>
         </div>
       </Form>
+      <div style={{ padding: "10px 0px 10px 0px" }}>
+        <GoogleOAuthProvider clientId="724424700968-lg5qikppbarb50r2a0bkrnvn7n55lkv5.apps.googleusercontent.com">
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              console.log(credentialResponse);
+            }}
+            onError={() => {
+              console.log("Login Failed");
+            }}
+          />
+        </GoogleOAuthProvider>
+      </div>
     </div>
   );
 };
