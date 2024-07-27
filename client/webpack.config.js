@@ -5,6 +5,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"), // path_of_current_dir/output_dir
     filename: "bundle.js",
+    publicPath: "/", //set path of file-loader
   },
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],
@@ -19,6 +20,15 @@ module.exports = {
       {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
+      },
+
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loader: "url-loader",
+        options: {
+          name: "images/[name].[hash].[ext]",
+          limit: 8192,
+        },
       },
     ],
   },
