@@ -1,10 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input, Form } from "antd";
-import {
+import axios from "axios";
+
+/*import {
   hasGrantedAllScopesGoogle,
   GoogleOAuthProvider,
   GoogleLogin,
 } from "@react-oauth/google";
+*/
+
+import googleButton from "../assets/google_signin_buttons/web/1x/btn_google_signin_dark_pressed_web.png";
+
+const navigate = (url: string) => {
+  window.location.href = url;
+};
+
+const auth = async () => {
+  console.log("Google sign in button - clicked");
+  try {
+    const response = await axios.post("http://localhost:3000/request");
+    console.log("API Response:", response.data);
+    const data = await response.data;
+    navigate(data.url);
+  } catch (error) {
+    console.error("Error fetching auth data", error);
+  }
+};
 
 const Login: React.FC = () => {
   const [form] = Form.useForm();
@@ -79,16 +100,9 @@ const Login: React.FC = () => {
         </div>
       </Form>
       <div style={{ padding: "10px 0px 10px 0px" }}>
-        <GoogleOAuthProvider clientId="724424700968-lg5qikppbarb50r2a0bkrnvn7n55lkv5.apps.googleusercontent.com">
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              console.log(credentialResponse);
-            }}
-            onError={() => {
-              console.log("Login Failed");
-            }}
-          />
-        </GoogleOAuthProvider>
+        <button type="button" onClick={() => auth()}>
+          <img src={googleButton} alt="Google sign in button"></img>
+        </button>
       </div>
     </div>
   );
