@@ -14,6 +14,14 @@ app.use(cors());
 
 app.use(express.json());
 
+import {
+  handleOAuthGetRequest,
+  handleOAuthPostRequest,
+} from "./routes/request";
+
+app.post("/request", handleOAuthPostRequest);
+app.get("/oauth", handleOAuthGetRequest);
+
 app.get("/api/projects", async (req: any, res: any) => {
   try {
     async function main() {
