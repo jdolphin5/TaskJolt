@@ -38,5 +38,8 @@ module.exports = {
       template: './new/path/to/index.html', // Specify the new location of your HTML template
     }),
   */
+  devServer: {
+    historyApiFallback: true,
+  },
   cache: false,
 };
