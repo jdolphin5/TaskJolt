@@ -50,8 +50,8 @@ export const handleOAuthGetRequest = async (req: any, res: any) => {
     console.log("credentials", user);
 
     const data = await getUserData(user.access_token);
-    const dataJSON = JSON.stringify(data);
-    res.redirect(`http://localhost:8080/auth?userData=${dataJSON}`);
+    const dataJSON = encodeURIComponent(JSON.stringify(data));
+    res.redirect(`http://localhost:8080/loggedin?userData=${dataJSON}`);
   } catch (error: any) {
     console.error("Error with signing in with Google", error);
   }
