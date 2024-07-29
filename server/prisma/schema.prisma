@@ -72,9 +72,9 @@ model task_users {
 
 model users {
   id                   Int          @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.SmallInt
-  email                String?       @db.Text
+  email                String?      @db.Text
   is_google_oauth2     Int          @db.SmallInt
-  google_sub           String?      @db.Text
+  google_sub           String?      @db.VarChar(255) @unique
   password             String?      @db.Text
   last_login_date_time DateTime?    @db.DateTime(0)
   created_date_time    DateTime     @db.DateTime(0)
