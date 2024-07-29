@@ -10,6 +10,7 @@ TaskJolt is a full-stack interactive Task Management web app.
 - Adaptive container for various screen sizes
 - Detailed task tracking with priority levels, due date, duration, notes
 - Manage task dependencies with parent-child relationships
+- Login with email & password or Google, assign users to tasks
 - Critical Path Method (CPM) algorithm for optimised scheduling
 - Generate network diagrams for project visualisation
 
