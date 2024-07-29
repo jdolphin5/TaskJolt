@@ -1,3 +1,8 @@
+import {
+  handleOAuthGetRequest,
+  handleOAuthPostRequest,
+} from "./routes/request";
+
 const path = require("path"); // Add the 'path' module
 const express = require("express");
 const app = express();
@@ -13,11 +18,6 @@ const prisma = new PrismaClient();
 app.use(cors());
 
 app.use(express.json());
-
-import {
-  handleOAuthGetRequest,
-  handleOAuthPostRequest,
-} from "./routes/request";
 
 app.post("/request", handleOAuthPostRequest);
 app.get("/oauth", handleOAuthGetRequest);
