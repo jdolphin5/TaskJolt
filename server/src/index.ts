@@ -1,16 +1,15 @@
-import {
-  handleOAuthGetRequest,
-  handleOAuthPostRequest,
-} from "./routes/request";
-
 const path = require("path"); // Add the 'path' module
 const express = require("express");
 const app = express();
 const cors = require("cors");
 
-const mysql = require("mysql");
 const dotenv = require("dotenv");
 dotenv.config();
+
+const session = require("express-session");
+
+//const mysql = require("mysql");
+import { passport } from "./routes/request"; //import request for OAuth funcs
 
 const { PrismaClient, Prisma } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -19,8 +18,39 @@ app.use(cors());
 
 app.use(express.json());
 
-app.post("/request", handleOAuthPostRequest);
-app.get("/oauth", handleOAuthGetRequest);
+app.use(
+  session({
+    secret: "abcdSecretKey",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Routes
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile"] })
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  function (req: any, res: any) {
+    // Successful authentication, redirect home.
+    console.log("app.get(/auth/google/callback req.user:", req.user);
+    res.redirect("/profile");
+  }
+);
+
+app.get("/profile", (req: any, res: any) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/");
+  }
+  console.log("/profile:", req.user);
+  res.send(`<h1>Hello ${req.user.email}</h1>`);
+});
 
 app.get("/api/projects", async (req: any, res: any) => {
   try {

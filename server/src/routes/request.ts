@@ -1,58 +1,87 @@
-const { OAuth2Client } = require("google-auth-library");
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
-export const handleOAuthPostRequest = async (req: any, res: any) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:8080");
-  res.header("Referrer-Policy", "no-referrer-when-downgrade");
+const { PrismaClient, Prisma } = require("@prisma/client");
+const prisma = new PrismaClient();
 
-  const redirectUrl = "http://localhost:3000/oauth";
-  const oAuth2Client = new OAuth2Client(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET,
-    redirectUrl
-  );
+//console.log(process.env.CLIENT_ID);
 
-  const authoriseUrl = oAuth2Client.generateAuthUrl({
-    access_type: "offline",
-    scope: "https://www.googleapis.com/auth/userinfo.profile openid",
-    prompt: "consent",
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.CLIENT_ID,
+      clientSecret: process.env.CLIENT_SECRET,
+      callbackURL: "/auth/google/callback",
+    },
+    async (
+      accessToken: string,
+      refreshToken: string,
+      profile: any,
+      done: any
+    ) => {
+      console.log(accessToken);
+
+      // Check if user already exists in our db
+      const existingUser = await prisma.users.findUnique({
+        where: {
+          google_sub: accessToken,
+        },
+      });
+      console.log("Found user:", existingUser);
+
+      if (existingUser) {
+        // User already exists
+        return done(null, existingUser);
+      }
+
+      // If not, create a new user
+      const newUser = await prisma.users.create({
+        data: {
+          email: "user@example.com",
+          is_google_oauth2: 1,
+          google_sub: accessToken,
+          last_login_date_time: new Date().toISOString(),
+          created_date_time: new Date().toISOString(),
+          type: "super",
+        },
+      });
+
+      console.log("Created user:", newUser);
+
+      return done(null, newUser);
+
+      //return done(null, profile);
+    }
+  )
+);
+/*
+  id                   Int          @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.SmallInt
+  email                String?       @db.Text
+  is_google_oauth2     Int          @db.SmallInt
+  google_sub           String?      @db.Text
+  password             String?      @db.Text
+  last_login_date_time DateTime?    @db.DateTime(0)
+  created_date_time    DateTime     @db.DateTime(0)
+  type                 String       @db.Text
+  task_users           task_users[] @ignore
+*/
+
+// Serialize user ID into the session
+passport.serializeUser((user: any, done: any) => {
+  done(null, user);
+});
+
+// Deserialize user from the session
+passport.deserializeUser(async (user: any, done: any) => {
+  /*
+  const user = await prisma.users.findUnique({
+    where: {
+      google_sub: id,
+    },
   });
+  done(null, user);
+  */
+  done(null, user);
+});
 
-  res.json({ url: authoriseUrl });
-};
-
-const getUserData = async (access_token: string) => {
-  const response = await fetch(
-    `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${encodeURIComponent(
-      access_token
-    )}`
-  );
-  const data = await response.json();
-  console.log("data", data);
-  return data;
-};
-
-export const handleOAuthGetRequest = async (req: any, res: any) => {
-  console.log(
-    "Oauth send code from google back to server to then retrieve user credentials"
-  );
-  const code = req.query.code;
-  try {
-    const redirectUrl = "http://localhost:3000/oauth";
-    const oAuth2Client = new OAuth2Client(
-      process.env.CLIENT_ID,
-      process.env.CLIENT_SECRET,
-      redirectUrl
-    );
-    const oAuth2ClientRes = await oAuth2Client.getToken(code);
-    await oAuth2Client.setCredentials(oAuth2ClientRes.tokens);
-    console.log("Tokens acquired");
-    const user = oAuth2Client.credentials;
-    console.log("credentials", user);
-
-    const data = await getUserData(user.access_token);
-    const dataJSON = encodeURIComponent(JSON.stringify(data));
-    res.redirect(`http://localhost:8080/loggedin?userData=${dataJSON}`);
-  } catch (error: any) {
-    console.error("Error with signing in with Google", error);
-  }
-};
+export { passport };

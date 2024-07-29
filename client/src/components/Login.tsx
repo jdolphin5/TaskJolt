@@ -18,10 +18,7 @@ const navigate = (url: string) => {
 const auth = async () => {
   console.log("Google sign in button - clicked");
   try {
-    const response = await axios.post("http://localhost:3000/request");
-    console.log("API Response:", response.data);
-    const data = await response.data;
-    navigate(data.url);
+    navigate("http://localhost:3000/auth/google");
   } catch (error) {
     console.error("Error fetching auth data", error);
   }
