@@ -8,6 +8,7 @@ import Tags from "./Tags";
 import Dependencies from "./Dependencies";
 import CriticalPath from "./CriticalPath";
 import Login from "./Login";
+import LoggedIn from "./LoggedIn";
 import { fetchProjectData, fetchTaskDataWithProjectData } from "../APIFunc";
 
 const ContentArea: React.FC = () => {
@@ -145,6 +146,7 @@ const ContentArea: React.FC = () => {
         }
       />
       <Route path="/login" element={<Login />} />
+      <Route path="/loggedin" element={<LoggedIn />} />
     </Routes>
   );
 };
