@@ -20,13 +20,24 @@ app.use(express.json());
 
 app.use(
   session({
-    secret: "abcdSecretKey",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      secure: false, // Should be true in production with HTTPS
+      httpOnly: true,
+    },
   })
 );
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(
+  cors({
+    origin: "http://localhost:8080",
+    credentials: true,
+  })
+);
 
 // Routes
 app.get(
@@ -38,18 +49,18 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   function (req: any, res: any) {
-    // Successful authentication, redirect home.
+    // Successful authentication, redirect to :8080/loggedin
     console.log("app.get(/auth/google/callback req.user:", req.user);
-    res.redirect("/profile");
+    res.redirect("http://localhost:8080/loggedin");
   }
 );
 
-app.get("/profile", (req: any, res: any) => {
+app.get("/api/profile", async (req: any, res: any) => {
   if (!req.isAuthenticated()) {
-    return res.redirect("/");
+    return res.status(401).json({ error: "User not authenticated" });
   }
-  console.log("/profile:", req.user);
-  res.send(`<h1>Hello ${req.user.email}</h1>`);
+  console.log("/api/profile endpoint hit");
+  res.send(req.user);
 });
 
 app.get("/api/projects", async (req: any, res: any) => {
