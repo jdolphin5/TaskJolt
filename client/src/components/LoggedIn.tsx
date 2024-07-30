@@ -7,7 +7,9 @@ const LoggedIn: React.FC = () => {
 
   const getUserData = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/profile`);
+      const response = await axios.get(`http://localhost:3000/api/profile`, {
+        withCredentials: true,
+      });
       //console.log("API Response:", response.data);
       setUserData(response.data);
       return response.data;

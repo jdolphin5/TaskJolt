@@ -1,4 +1,4 @@
-const path = require("path"); // Add the 'path' module
+const path = require("path");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -8,13 +8,17 @@ dotenv.config();
 
 const session = require("express-session");
 
-//const mysql = require("mysql");
 import { passport } from "./routes/request"; //import request for OAuth funcs
 
-const { PrismaClient, Prisma } = require("@prisma/client");
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:8080",
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
@@ -25,26 +29,22 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure: false, // Should be true in production with HTTPS
-      httpOnly: true,
+      httpOnly: true, //prevent client-side scripts from accessing the cookie
+      sameSite: "lax",
     },
   })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(
-  cors({
-    origin: "http://localhost:8080",
-    credentials: true,
-  })
-);
-
-// Routes
+//get the user's Google profile info & email
 app.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["profile"] })
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
+//google authenticate route
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
@@ -55,6 +55,7 @@ app.get(
   }
 );
 
+//send google user data to frontend
 app.get("/api/profile", async (req: any, res: any) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ error: "User not authenticated" });
