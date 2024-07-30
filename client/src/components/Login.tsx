@@ -28,12 +28,12 @@ const Login: React.FC = () => {
   const [form] = Form.useForm();
 
   const [formData, setFormData] = useState<LoginForm>({
-    username: "",
+    email: "",
     password: "",
   });
 
   type LoginForm = {
-    username: string;
+    email: string;
     password: string;
   };
 
@@ -64,16 +64,16 @@ const Login: React.FC = () => {
         form={form}
       >
         <Form.Item
-          name="username"
-          label="Username"
+          name="email"
+          label="Email"
           rules={[
             {
               required: true,
-              message: "Please type your username",
+              message: "Please type your email",
             },
           ]}
         >
-          <Input name="username" onChange={handleInputChange} />
+          <Input name="email" onChange={handleInputChange} />
         </Form.Item>
         <Form.Item
           name="password"
