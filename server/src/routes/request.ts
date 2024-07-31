@@ -1,5 +1,6 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const LocalStrategy = require("passport-local").Strategy;
 
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -55,6 +56,52 @@ passport.use(
       return done(null, newUser);
     }
   )
+);
+
+const verifyPassword = (formPassword: string, dbPassword: string) => {
+  return formPassword === dbPassword;
+};
+
+passport.use(
+  new LocalStrategy(async (username: string, password: string, done: any) => {
+    // Check if user already exists in our db
+    const existingUser = await prisma.users.findUnique({
+      where: {
+        email: username,
+      },
+    });
+
+    console.log("Found user:", existingUser);
+
+    if (existingUser) {
+      if (verifyPassword(password, existingUser.password)) {
+        /*
+            update last_login_date_time in prisma db
+          */
+
+        return done(null, existingUser);
+      } else {
+        console.log("wrong password");
+        return done(null, null);
+      }
+    }
+
+    // If not, create a new user
+    const newUser = await prisma.users.create({
+      data: {
+        email: username,
+        is_google_oauth2: 0,
+        password: password,
+        google_sub: null,
+        last_login_date_time: new Date().toISOString(),
+        created_date_time: new Date().toISOString(),
+        type: "super",
+      },
+    });
+
+    console.log("Created user:", newUser);
+    return done(null, newUser);
+  })
 );
 
 // Serialize user into the session

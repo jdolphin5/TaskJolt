@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input, Form } from "antd";
+import axios from "axios";
 
 import googleButton from "../assets/google_signin_buttons/web/1x/btn_google_signin_dark_pressed_web.png";
 
@@ -12,7 +13,7 @@ const auth = async () => {
   try {
     navigate("http://localhost:3000/auth/google");
   } catch (error) {
-    console.error("Error fetching auth data", error);
+    console.error("Error signing in with google", error);
   }
 };
 
@@ -29,8 +30,20 @@ const Login: React.FC = () => {
     password: string;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("submit button clicked", formData);
+
+    try {
+      const response = await axios.post("http://localhost:3000/locallogin", {
+        username: formData.email,
+        password: formData.password,
+        withCredentials: true,
+      });
+
+      navigate(response.data);
+    } catch (error) {
+      console.error("Error signing in with local", error);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

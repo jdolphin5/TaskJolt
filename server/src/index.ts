@@ -38,6 +38,19 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.post(
+  "/locallogin",
+  passport.authenticate("local", {
+    failureRedirect: "http://localhost:8080/login",
+    failureMessage: true,
+  }),
+  async (req: any, res: any) => {
+    //successful authentication, redirect to :8080/loggedin
+    console.log("app.get(/locallogin req.user:", req.user);
+    res.send("http://localhost:8080/loggedin");
+  }
+);
+
 //get the user's Google profile info & email
 app.get(
   "/auth/google",
@@ -49,7 +62,7 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   function (req: any, res: any) {
-    // Successful authentication, redirect to :8080/loggedin
+    //successful authentication, redirect to :8080/loggedin
     console.log("app.get(/auth/google/callback req.user:", req.user);
     res.redirect("http://localhost:8080/loggedin");
   }
