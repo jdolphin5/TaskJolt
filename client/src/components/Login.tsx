@@ -84,9 +84,6 @@ const Login: React.FC = () => {
             Login
           </Button>
         </Form.Item>
-        <div>
-          <Button type="primary">Sign Up</Button>
-        </div>
       </Form>
       <div style={{ padding: "10px 0px 10px 0px" }}>
         <button type="button" onClick={() => auth()}>
