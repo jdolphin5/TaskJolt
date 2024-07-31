@@ -64,6 +64,17 @@ app.get("/api/profile", async (req: any, res: any) => {
   res.send(req.user);
 });
 
+//logout - google
+app.post("/logout", async (req: any, res: any) => {
+  req.logout((error: any) => {
+    if (error) {
+      console.error("logout", error);
+    }
+
+    res.send("http://localhost:8080/login");
+  });
+});
+
 app.get("/api/projects", async (req: any, res: any) => {
   try {
     async function main() {
