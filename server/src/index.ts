@@ -39,7 +39,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.post(
-  "/locallogin",
+  "/api/locallogin",
   passport.authenticate("local", {
     failureRedirect: "http://localhost:8080/login",
     failureMessage: true,
@@ -86,6 +86,14 @@ app.post("/logout", async (req: any, res: any) => {
 
     res.send("http://localhost:8080/login");
   });
+});
+
+app.get("/api/isauth", async (req: any, res: any) => {
+  if (req.isAuthenticated()) {
+    res.send({ isAuth: true });
+  } else {
+    res.send({ isAuth: false });
+  }
 });
 
 app.get("/api/projects", async (req: any, res: any) => {
