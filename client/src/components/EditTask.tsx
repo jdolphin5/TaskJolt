@@ -22,6 +22,7 @@ import {
   editTaskByTaskId,
   deleteNoteByNoteId,
   fetchNotesData,
+  checkAuth,
 } from "../APIFunc";
 
 const EditTask: React.FC<TasksProps> = ({
@@ -69,6 +70,8 @@ const EditTask: React.FC<TasksProps> = ({
   const handleAddProjectModal = () => {
     setShowHideAddProjectModal(true);
   };
+
+  const [isAuth, setIsAuth] = useState<boolean>(false);
 
   const [formData, setFormData] = useState<{
     name?: string;
@@ -133,6 +136,36 @@ const EditTask: React.FC<TasksProps> = ({
   useEffect(() => {
     console.log(formData);
   }, [formData]);
+
+  useEffect(() => {
+    console.log("auth", isAuth);
+  }, [isAuth]);
+
+  const getAuthValue = async () => {
+    try {
+      const response = await checkAuth();
+
+      if (response) {
+        const authData = response.data;
+        return authData;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error("Error in getAuthValue:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchAuthValue = async () => {
+      const value = await getAuthValue();
+      console.log("auth from API call", value.isAuth);
+      setIsAuth(value.isAuth);
+    };
+
+    fetchAuthValue();
+  }, []);
 
   useEffect(() => {
     if (isFormDataFormatted) {
