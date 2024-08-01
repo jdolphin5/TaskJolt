@@ -34,11 +34,14 @@ const Login: React.FC = () => {
     console.log("submit button clicked", formData);
 
     try {
-      const response = await axios.post("http://localhost:3000/locallogin", {
-        username: formData.email,
-        password: formData.password,
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/locallogin",
+        {
+          username: formData.email,
+          password: formData.password,
+          withCredentials: true,
+        }
+      );
 
       navigate(response.data);
     } catch (error) {
