@@ -2,24 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "antd";
 import axios from "axios";
 axios.defaults.withCredentials = true;
-
-const navigate = (url: string) => {
-  window.location.href = url;
-};
-
-const logout = async () => {
-  try {
-    const response = await axios.post(`http://localhost:3000/logout`, {
-      withCredentials: true,
-    });
-
-    //need to use post to return the redirect URI to the frontend
-    //if redirecting from the backend, headers are lost and redirect is blocked due to CORS
-    navigate(response.data);
-  } catch (error: any) {
-    console.error("Cannot logout: /logout", error);
-  }
-};
+import { logout } from "../AuthFunc";
 
 const LoggedIn: React.FC = () => {
   const [userData, setUserData] = useState<any>(null);
