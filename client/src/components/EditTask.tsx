@@ -22,8 +22,8 @@ import {
   editTaskByTaskId,
   deleteNoteByNoteId,
   fetchNotesData,
-  checkAuth,
 } from "../APIFunc";
+import { getAuthValue } from "../AuthFunc";
 
 const EditTask: React.FC<TasksProps> = ({
   tasksPageLoaded,
@@ -71,7 +71,7 @@ const EditTask: React.FC<TasksProps> = ({
     setShowHideAddProjectModal(true);
   };
 
-  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const [formData, setFormData] = useState<{
     name?: string;
@@ -138,30 +138,14 @@ const EditTask: React.FC<TasksProps> = ({
   }, [formData]);
 
   useEffect(() => {
-    console.log("auth", isAuth);
-  }, [isAuth]);
-
-  const getAuthValue = async () => {
-    try {
-      const response = await checkAuth();
-
-      if (response) {
-        const authData = response.data;
-        return authData;
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.error("Error in getAuthValue:", error);
-      return null;
-    }
-  };
+    console.log("auth", isLoggedIn);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const fetchAuthValue = async () => {
       const value = await getAuthValue();
       console.log("auth from API call", value.isAuth);
-      setIsAuth(value.isAuth);
+      setIsLoggedIn(value.isAuth);
     };
 
     fetchAuthValue();
