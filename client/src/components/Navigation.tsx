@@ -1,13 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getAuthValue, logout } from "../AuthFunc";
 
 const Navigation: React.FC = () => {
   const [showHideMainMenu, setShowHideMainMenu] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const openMainMenu = (): void => {
     console.log("clicked");
     setShowHideMainMenu(!showHideMainMenu);
   };
+
+  useEffect(() => {
+    const fetchAuthValue = async () => {
+      const value = await getAuthValue();
+      console.log("auth from API call", value.isAuth);
+      setIsLoggedIn(value.isAuth);
+    };
+
+    fetchAuthValue();
+  }, []);
+
+  useEffect(() => {
+    console.log(isLoggedIn);
+  }, [isLoggedIn]);
+
   return (
     <>
       <div style={{ padding: "5px 10px 5px 10px", fontSize: "20px" }}>
@@ -71,9 +88,17 @@ const Navigation: React.FC = () => {
             <li style={{ padding: "7px 0px 0px 0px" }}>
               <Link to={"/CriticalPath"}>Critical Path</Link>
             </li>
-            <li style={{ padding: "7px 0px 0px 0px" }}>
-              <Link to={"/Login"}>Login</Link>
-            </li>
+            {isLoggedIn ? (
+              <li style={{ padding: "7px 0px 0px 0px" }}>
+                <Link to={"/Home"}>
+                  <span onClick={() => logout()}>Logout</span>
+                </Link>
+              </li>
+            ) : (
+              <li style={{ padding: "7px 0px 0px 0px" }}>
+                <Link to={"/Login"}>Login</Link>
+              </li>
+            )}
           </ul>
         )}
       </div>
