@@ -1,17 +1,5 @@
 import axios from "axios";
 
-export async function checkAuth() {
-  try {
-    const response = await axios.get("http://localhost:3000/api/isauth");
-
-    console.log(response);
-
-    return response;
-  } catch (error) {
-    console.error("Error fetching auth data:", error);
-  }
-}
-
 export async function fetchProjectData() {
   try {
     const response = await axios.get("http://localhost:3000/api/projects");
