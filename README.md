@@ -1,7 +1,7 @@
 # TaskJolt
 TaskJolt is a full-stack interactive Task Management web app.
 
-**Frontend**: HTML, CSS, Typescript, ReactJS, NodeJS, Webpack
+**Frontend**: HTML, CSS, Typescript, ReactJS, Webpack
 
 **Backend**: Typescript, NodeJS, ExpressJS, MySQL, Prisma
 
